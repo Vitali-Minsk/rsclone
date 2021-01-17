@@ -105,9 +105,9 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: ''//path.resolve(__dirname, 'dist'),
-              // hmr: isDev,
-              // reloadAll: true 
+              publicPath: '',//path.resolve(__dirname, 'dist'),
+              hmr: isDev,
+              reloadAll: true 
             },
           }, 
           'css-loader'
