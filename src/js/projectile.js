@@ -1,8 +1,9 @@
-const canvas = document.querySelector('canvas');
-const ctx = canvas.getContext('2d');
+// const canvas = document.querySelector('canvas');
+// const ctx = canvas.getContext('2d');
 
 export default class Projectile {
-  constructor(x, y, radius, color, velocity) {
+  constructor(ctx, x, y, radius, color, velocity) {
+    this.ctx = ctx;
     this.x = x;
     this.y = y;
     this.radius = radius;
@@ -11,10 +12,10 @@ export default class Projectile {
   }
 
   draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
-    ctx.fill();
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    this.ctx.fillStyle = this.color;
+    this.ctx.fill();
   }
 
   update() {
