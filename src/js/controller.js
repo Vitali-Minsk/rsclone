@@ -18,3 +18,4 @@ export default class Controller {
     this.model.windowEventListen();
   }
 }
+//
