@@ -1,4 +1,4 @@
-import gsap from 'gsap';
+// import gsap from 'gsap';
 import Player from './player';
 import Projectile from './projectile';
 import Particle from './particle';
@@ -25,6 +25,7 @@ export default class Model {
     this.timeId = false;
 
     this.playerAngle = 0;
+    this.enemyAngle = 0;
 
     this.keys = {
       KeyW: false,
@@ -47,29 +48,21 @@ export default class Model {
 
   spawnEnemies() {
     this.timeId = setInterval(() => {
-      const radius = Math.random() * (30 - 4) + 4;
-
-      let x;
-      let y;
+      let enemyX;
+      let enemyY;
 
       if (Math.random() < 0.5) {
-        x = Math.random() < 0.5 ? 0 - radius : this.canvas.width + radius;
-        y = Math.random() * this.canvas.height;
+        enemyX = Math.random() < 0.5 ? 0 - 50 : this.canvas.width + 50;
+        enemyY = Math.random() * this.canvas.height;
       } else {
-        x = Math.random() * this.canvas.width;
-        y = Math.random() < 0.5 ? 0 - radius : this.canvas.height + radius;
+        enemyX = Math.random() * this.canvas.width;
+        enemyY = Math.random() < 0.5 ? 0 - 50 : this.canvas.height + 50;
       }
-      const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
-      const angle = Math.atan2(
-        this.canvas.height / 2 - y,
-        this.canvas.width / 2 - x,
-      );
-      const velocity = {
-        x: Math.cos(angle),
-        y: Math.sin(angle),
-      };
-      this.enemies.push(new Enemy(this.ctx, x, y, radius, color, velocity));
-    }, 1000);
+      const enemy = new Enemy(this.ctx, enemyX, enemyY);
+      enemy.calculateAngle(this.x, this.y);
+      enemy.create();
+      this.enemies.push(enemy);
+    }, 2000);
   }
 
   stopEnemySpawn() {
@@ -80,9 +73,6 @@ export default class Model {
     this.animationId = requestAnimationFrame(() => this.animate());
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    // this.player.draw();
-    // console.log(this.keys);
-    // this.player.move(this.keys);
     this.playerMove();
     this.player.rotate(this.playerAngle);
     this.particles.forEach((particle, index) => {
@@ -107,8 +97,7 @@ export default class Model {
     });
 
     this.enemies.forEach((enemy, index) => {
-      enemy.update();
-
+      enemy.update(this.x, this.y);
       // end game
       const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
       if (dist - enemy.radius - this.player.radius < 1) {
@@ -123,18 +112,18 @@ export default class Model {
       this.projectiles.forEach((projectile, projectileIndex) => {
         const dist1 = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
-        if (dist1 - enemy.radius - projectile.radius < 1) {
+        if (dist1 - projectile.radius < enemy.type.width / 2) {
           // increase score
           this.score += 100;
           this.scoreEl.innerHTML = this.score;
           // create explosions
-          for (let i = 0; i < enemy.radius * 2; i += 1) {
+          for (let i = 0; i < enemy.type.width * 2; i += 1) {
             this.particles.push(new Particle(
               this.ctx,
               projectile.x,
               projectile.y,
               Math.random() * 2,
-              enemy.color,
+              'red',
               {
                 x: (Math.random() - 0.5) * Math.random() * 8,
                 y: (Math.random() - 0.5) * Math.random() * 8,
@@ -142,10 +131,12 @@ export default class Model {
             ));
           }
 
-          if (enemy.radius - 10 > 10) {
-            gsap.to(enemy, {
-              radius: enemy.radius - 10,
-            });
+          if (enemy.health > 1) {
+            // gsap.to(enemy, {
+            const healthEnemy = enemy;
+            healthEnemy.health -= 1;
+            // enemy.health -= 1;
+            // });
             this.projectiles.splice(projectileIndex, 1);
           } else {
             this.enemies.splice(index, 1);
@@ -236,7 +227,6 @@ export default class Model {
   }
 
   pauseGame() {
-    console.log(this.isPause);
     if (!this.isPause) {
       this.stopEnemySpawn();
       cancelAnimationFrame(this.animationId);
