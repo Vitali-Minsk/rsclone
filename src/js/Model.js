@@ -113,13 +113,13 @@ export default class Model {
       // this.playerHit(projectile);
     });
 
-    this.enemies.forEach((enemy) => {
+    this.enemies.forEach((enemy, index) => {
       enemy.update(this.x, this.y);
       // end game
       this.checkEndGame(enemy);
 
       // hit the enemy
-      // this.enemyHit(enemy, index);
+      this.enemyHit(enemy, index);
     });
   }
 
@@ -162,12 +162,9 @@ export default class Model {
           this.createSparks(1, enemyProjectile, 2);
           this.enemiesProjectiles.splice(index, 1);
         } else {
-          setTimeout(() => {
-            cancelAnimationFrame(this.animationId);
-          }, 2000);
           this.createSparks(1, enemyProjectile, 4);
+          cancelAnimationFrame(this.animationId);
           this.stopEnemySpawn();
-          // this.player.img = null;
         }
       }
     });
