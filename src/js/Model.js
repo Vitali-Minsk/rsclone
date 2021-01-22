@@ -36,6 +36,7 @@ export default class Model {
 
     this.isPause = false;
     this.mouseMoveHandlerBind = null;
+    this.enemiesProjectiles = null;
   }
 
   init() {
@@ -44,6 +45,7 @@ export default class Model {
     this.enemies = [];
     this.particles = [];
     this.score = 0;
+    this.enemiesProjectiles = [];
   }
 
   spawnEnemies() {
@@ -95,78 +97,99 @@ export default class Model {
         this.projectiles.splice(index, 1);
       }
     });
+    this.enemiesProjectiles.forEach((projectile, index) => {
+      projectile.update();
+
+      // remove from edges from screen
+      if (
+        projectile.x + projectile.radius < 0
+        || projectile.x - projectile.radius > this.canvas.width
+        || projectile.y + projectile.radius < 0
+        || projectile.y - projectile.radius > this.canvas.height
+      ) {
+        this.enemiesProjectiles.splice(index, 1);
+      }
+
+      this.playerHit(projectile);
+    });
 
     this.enemies.forEach((enemy, index) => {
       enemy.update(this.x, this.y);
       // end game
-      const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
-      if (dist - enemy.radius - this.player.radius < 1) {
-        cancelAnimationFrame(this.animationId);
-        // this.modal.classList.remove('modal_hidden');
-        // this.modalScore.innerHTML = this.score;
-        // this.updateScoreDisplay();
-        this.stopEnemySpawn();
-      }
+      this.checkEndGame(enemy);
 
       // hit the enemy
-      this.projectiles.forEach((projectile, projectileIndex) => {
-        const dist1 = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
-
-        if (dist1 - projectile.radius < enemy.type.width / 2) {
-          // increase score
-          this.score += 100;
-          this.scoreEl.innerHTML = this.score;
-          // create explosions
-          for (let i = 0; i < enemy.type.width * 2; i += 1) {
-            this.particles.push(new Particle(
-              this.ctx,
-              projectile.x,
-              projectile.y,
-              Math.random() * 2,
-              'red',
-              {
-                x: (Math.random() - 0.5) * Math.random() * 8,
-                y: (Math.random() - 0.5) * Math.random() * 8,
-              },
-            ));
-          }
-
-          if (enemy.health > 1) {
-            // gsap.to(enemy, {
-            const healthEnemy = enemy;
-            healthEnemy.health -= 1;
-            // enemy.health -= 1;
-            // });
-            this.projectiles.splice(projectileIndex, 1);
-          } else {
-            this.enemies.splice(index, 1);
-            this.projectiles.splice(projectileIndex, 1);
-          }
-        }
-      });
+      this.enemyHit(enemy, index);
     });
   }
 
-  windowEventListen() {
-    window.addEventListener('click', (event) => {
-      this.playerAngle = Math.atan2(event.clientY - this.y,
-        event.clientX - this.x);
-      const velocity = {
-        x: Math.cos(this.playerAngle) * 5,
-        y: Math.sin(this.playerAngle) * 5,
-      };
+  playerHit(projectile) {
+    const dist = Math.hypot(projectile.x - this.player.x, projectile.y - this.player.y);
+    if (dist - projectile.radius < this.player.type.width / 2) {
+      console.log('shot');
+      this.createSparks(1, projectile);
+    }
+  }
 
-      this.projectiles.push(
-        new Projectile(
-          this.ctx,
-          this.x,
-          this.y,
-          5,
-          'white',
-          velocity,
-        ),
-      );
+  enemyHit(enemy, enemyIndex) {
+    this.projectiles.forEach((projectile, projectileIndex) => {
+      const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
+
+      if (dist - projectile.radius < enemy.type.width / 2) {
+        this.scoreIncrease();
+        this.createSparks(enemy.type.width, projectile);
+        this.enemyDamage(enemy, projectileIndex, enemyIndex);
+      }
     });
+  }
+
+  checkEndGame(enemy) {
+    const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
+    if (dist - enemy.radius - this.player.radius < 1) {
+      cancelAnimationFrame(this.animationId);
+      // this.modal.classList.remove('modal_hidden');
+      // this.modalScore.innerHTML = this.score;
+      // this.updateScoreDisplay();
+      this.stopEnemySpawn();
+    }
+  }
+
+  createSparks(sparksNumber, projectile) {
+    for (let i = 0; i < sparksNumber; i += 1) {
+      this.particles.push(new Particle(
+        this.ctx,
+        projectile.x,
+        projectile.y,
+        Math.random() * 1,
+        projectile.color,
+        {
+          x: (Math.random() - 0.5) * Math.random() * 8,
+          y: (Math.random() - 0.5) * Math.random() * 8,
+        },
+      ));
+    }
+  }
+
+  enemyDamage(enemy, projectileIndex, enemyIndex) {
+    if (enemy.health > 1) {
+      // gsap.to(enemy, {
+      const healthEnemy = enemy;
+      healthEnemy.health -= 1;
+      this.projectiles.splice(projectileIndex, 1);
+    } else {
+      this.enemies.splice(enemyIndex, 1);
+      this.projectiles.splice(projectileIndex, 1);
+    }
+  }
+
+  scoreIncrease() {
+    this.score += 100;
+    this.scoreEl.innerHTML = this.score;
+  }
+
+  windowEventListen() {
+    const mouseClickHandlerBind = (this.playerShot).bind(this);
+    window.addEventListener('click', mouseClickHandlerBind);
 
     this.mouseMoveHandlerBind = (this.mouseMoveHandler).bind(this);
     window.addEventListener('mousemove', this.mouseMoveHandlerBind);
@@ -202,20 +225,21 @@ export default class Model {
     this.init();
     this.animate();
     this.spawnEnemies();
+    this.enemiesShoot();
   }
 
   playerMove() {
     if (this.keys.KeyW) {
-      this.y -= 4;
+      this.y -= this.player.type.speed;
     }
     if (this.keys.KeyS) {
-      this.y += 4;
+      this.y += this.player.type.speed;
     }
     if (this.keys.KeyA) {
-      this.x -= 4;
+      this.x -= this.player.type.speed;
     }
     if (this.keys.KeyD) {
-      this.x += 4;
+      this.x += this.player.type.speed;
     }
     this.player.draw(this.x, this.y);
   }
@@ -238,5 +262,57 @@ export default class Model {
       this.isPause = false;
       window.addEventListener('mousemove', this.mouseMoveHandlerBind);
     }
+  }
+
+  playerShot(event) {
+    this.playerAngle = Math.atan2(event.clientY - this.y,
+      event.clientX - this.x);
+    const velocity = {
+      x: Math.cos(this.playerAngle) * 5,
+      y: Math.sin(this.playerAngle) * 5,
+    };
+
+    this.projectiles.push(
+      new Projectile(
+        this.ctx,
+        this.x,
+        this.y,
+        2,
+        'white',
+        velocity,
+      ),
+    );
+  }
+
+  enemiesShoot() {
+    setInterval(() => {
+      this.enemies.forEach((enemy, index) => {
+        const indRand = Math.floor(Math.random() * this.enemies.length);
+        if (indRand === index) {
+          this.enemyShot(enemy);
+        }
+      });
+    }, 500);
+  }
+
+  enemyShot(enemy) {
+    const enemyAngle = enemy.angle;
+    // const enemyAngle = Math.atan2(event.clientY - this.y,
+    //   event.clientX - this.x);
+    const velocity = {
+      x: Math.cos(enemyAngle) * 3,
+      y: Math.sin(enemyAngle) * 3,
+    };
+
+    this.enemiesProjectiles.push(
+      new Projectile(
+        this.ctx,
+        enemy.x,
+        enemy.y,
+        2,
+        enemy.projectileColor,
+        velocity,
+      ),
+    );
   }
 }

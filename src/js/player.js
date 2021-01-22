@@ -18,6 +18,8 @@ export default class Player {
     this.img = new Image(10);
     this.img.src = imgSpaceCraft;
     // this.img.width = 100;
+    this.health = 3;
+    this.type = null;
   }
 
   draw(moveX, moveY) {
@@ -70,6 +72,8 @@ export default class Player {
     // Поворачиваем на `degrees` наш градус
     this.ctx.rotate(angle);
     this.ctx.translate(-this.x, -this.y);
+    // eslint-disable-next-line prefer-destructuring
+    this.type = shipsImgSource[0];
 
     // Рисуем повернутую картинку
     this.ctx.drawImage(this.img,
