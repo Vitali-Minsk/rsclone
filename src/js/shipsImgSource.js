@@ -5,6 +5,8 @@ export default [
     width: 29,
     height: 39,
     health: 1,
+    projectileColor: 'rgb(0, 51, 204)',
+    speed: 2,
   },
   {
     x: 201,
@@ -12,6 +14,8 @@ export default [
     width: 59,
     height: 94,
     health: 3,
+    projectileColor: 'rgb(255, 0, 0)',
+    speed: 1.1,
   },
   {
     x: 86,
@@ -19,6 +23,8 @@ export default [
     width: 58,
     height: 55,
     health: 2,
+    projectileColor: 'rgb(0, 204, 0)',
+    speed: 1.9,
   },
   {
     x: 206,
@@ -26,6 +32,8 @@ export default [
     width: 58,
     height: 52,
     health: 2,
+    projectileColor: 'rgb(255, 0, 102)',
+    speed: 1.6,
   },
   {
     x: 92,
@@ -33,6 +41,8 @@ export default [
     width: 55,
     height: 43,
     health: 2,
+    projectileColor: 'rgb(255, 0, 255)',
+    speed: 1.8,
   },
   {
     x: 189,
@@ -40,6 +50,8 @@ export default [
     width: 86,
     height: 74,
     health: 3,
+    projectileColor: 'rgb(255, 204, 0)',
+    speed: 0.8,
   },
   {
     x: 80,
@@ -47,6 +59,8 @@ export default [
     width: 35,
     height: 26,
     health: 1,
+    projectileColor: 'rgb(0, 0, 102)',
+    speed: 2.3,
   },
   {
     x: 122,
@@ -54,6 +68,8 @@ export default [
     width: 23,
     height: 71,
     health: 1,
+    projectileColor: 'rgb(0, 204, 255)',
+    speed: 2.1,
   },
   {
     x: 175,
@@ -61,6 +77,8 @@ export default [
     width: 111,
     height: 55,
     health: 3,
+    projectileColor: 'rgb(255, 102, 0)',
+    speed: 1.2,
   },
   {
     x: 81,
@@ -68,6 +86,8 @@ export default [
     width: 58,
     height: 62,
     health: 2,
+    projectileColor: 'rgb(204, 204, 255)',
+    speed: 1.5,
   },
   {
     x: 182,
@@ -75,6 +95,8 @@ export default [
     width: 94,
     height: 55,
     health: 2,
+    projectileColor: 'rgb(102, 0, 102)',
+    speed: 1.7,
   },
   {
     x: 32,
@@ -82,5 +104,7 @@ export default [
     width: 296,
     height: 116,
     health: 5,
+    projectileColor: 'rgb(153, 51, 51)',
+    speed: 0.5,
   },
 ];

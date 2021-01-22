@@ -1,6 +1,3 @@
-// const canvas = document.querySelector('canvas');
-// const ctx = canvas.getContext('2d');
-
 import shipsImgSource from './shipsImgSource';
 import imgSpaceCraft from '../assets/sprite-ships2.png';
 
@@ -17,14 +14,16 @@ export default class Enemy {
 
     this.type = null;
     this.angle = 0;
+    this.projectileColor = null;
 
     this.playerX = 0;
     this.playerY = 0;
   }
 
   create() {
-    this.type = shipsImgSource[Math.floor(Math.random() * 12)];
+    this.type = shipsImgSource[Math.floor(Math.random() * 11)];
     this.health = this.type.health;
+    this.projectileColor = this.type.projectileColor;
 
     this.calculateVelocity();
   }
@@ -51,8 +50,8 @@ export default class Enemy {
     this.calculateAngle();
     this.draw();
     this.calculateVelocity();
-    this.x += this.velocity.x / 2;
-    this.y += this.velocity.y / 2;
+    this.x += this.velocity.x * this.type.speed * 0.3;
+    this.y += this.velocity.y * this.type.speed * 0.3;
   }
 
   calculateAngle() {
