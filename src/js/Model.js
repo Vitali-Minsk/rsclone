@@ -110,26 +110,26 @@ export default class Model {
         this.enemiesProjectiles.splice(index, 1);
       }
 
-      this.playerHit(projectile);
+      // this.playerHit(projectile);
     });
 
-    this.enemies.forEach((enemy, index) => {
+    this.enemies.forEach((enemy) => {
       enemy.update(this.x, this.y);
       // end game
       this.checkEndGame(enemy);
 
       // hit the enemy
-      this.enemyHit(enemy, index);
+      // this.enemyHit(enemy, index);
     });
   }
 
-  playerHit(projectile) {
-    const dist = Math.hypot(projectile.x - this.player.x, projectile.y - this.player.y);
-    if (dist - projectile.radius < this.player.type.width / 2) {
-      console.log('shot');
-      this.createSparks(1, projectile);
-    }
-  }
+  // playerHit(projectile) {
+  //   const dist = Math.hypot(projectile.x - this.player.x, projectile.y - this.player.y);
+  //   if (dist - projectile.radius < this.player.type.width / 2) {
+  //     console.log('shot');
+  //     this.createSparks(1, projectile, 2);
+  //   }
+  // }
 
   enemyHit(enemy, enemyIndex) {
     this.projectiles.forEach((projectile, projectileIndex) => {
@@ -137,30 +137,49 @@ export default class Model {
 
       if (dist - projectile.radius < enemy.type.width / 2) {
         this.scoreIncrease();
-        this.createSparks(enemy.type.width, projectile);
-        this.enemyDamage(enemy, projectileIndex, enemyIndex);
+        // this.createSparks(enemy.type.width, projectile);
+        this.enemyDamage(enemy, projectile, projectileIndex, enemyIndex);
       }
     });
   }
 
   checkEndGame(enemy) {
-    const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
-    if (dist - enemy.radius - this.player.radius < 1) {
+    const distEnem = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
+    if (distEnem - enemy.type.width / 2 - this.player.type.width / 2 < 1) {
       cancelAnimationFrame(this.animationId);
       // this.modal.classList.remove('modal_hidden');
       // this.modalScore.innerHTML = this.score;
       // this.updateScoreDisplay();
       this.stopEnemySpawn();
     }
+    this.enemiesProjectiles.forEach((enemyProjectile, index) => {
+      const distProj = Math.hypot(this.player.x - enemyProjectile.x,
+        this.player.y - enemyProjectile.y);
+      if (distProj - this.player.type.width / 2 < 1) {
+        // console.log(this.player.health);
+        if (this.player.health > 1) {
+          this.player.health -= 1;
+          this.createSparks(1, enemyProjectile, 2);
+          this.enemiesProjectiles.splice(index, 1);
+        } else {
+          setTimeout(() => {
+            cancelAnimationFrame(this.animationId);
+          }, 2000);
+          this.createSparks(1, enemyProjectile, 4);
+          this.stopEnemySpawn();
+          // this.player.img = null;
+        }
+      }
+    });
   }
 
-  createSparks(sparksNumber, projectile) {
+  createSparks(sparksNumber, projectile, particleSize) {
     for (let i = 0; i < sparksNumber; i += 1) {
       this.particles.push(new Particle(
         this.ctx,
         projectile.x,
         projectile.y,
-        Math.random() * 1,
+        Math.random() * particleSize,
         projectile.color,
         {
           x: (Math.random() - 0.5) * Math.random() * 8,
@@ -170,15 +189,17 @@ export default class Model {
     }
   }
 
-  enemyDamage(enemy, projectileIndex, enemyIndex) {
+  enemyDamage(enemy, projectile, projectileIndex, enemyIndex) {
     if (enemy.health > 1) {
       // gsap.to(enemy, {
       const healthEnemy = enemy;
       healthEnemy.health -= 1;
       this.projectiles.splice(projectileIndex, 1);
+      this.createSparks(enemy.type.width, projectile, 1);
     } else {
       this.enemies.splice(enemyIndex, 1);
       this.projectiles.splice(projectileIndex, 1);
+      this.createSparks(enemy.type.width, projectile, 5);
     }
   }
 
