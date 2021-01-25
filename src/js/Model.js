@@ -3,6 +3,7 @@ import Player from './player';
 import Projectile from './projectile';
 import Particle from './particle';
 import Enemy from './enemy';
+import StarsBackground from './starsBackground';
 
 export default class Model {
   constructor(canvas, scoreEl) {
@@ -37,6 +38,8 @@ export default class Model {
     this.isPause = false;
     this.mouseMoveHandlerBind = null;
     this.enemiesProjectiles = null;
+
+    this.background = new StarsBackground(this.canvas, this.ctx);
   }
 
   init() {
@@ -46,6 +49,7 @@ export default class Model {
     this.particles = [];
     this.score = 0;
     this.enemiesProjectiles = [];
+    this.background.initStars();
   }
 
   spawnEnemies() {
@@ -73,8 +77,9 @@ export default class Model {
 
   animate() {
     this.animationId = requestAnimationFrame(() => this.animate());
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.background.updateStars();
     this.playerMove();
     this.player.rotate(this.playerAngle);
     this.particles.forEach((particle, index) => {
@@ -122,14 +127,6 @@ export default class Model {
       this.enemyHit(enemy, index);
     });
   }
-
-  // playerHit(projectile) {
-  //   const dist = Math.hypot(projectile.x - this.player.x, projectile.y - this.player.y);
-  //   if (dist - projectile.radius < this.player.type.width / 2) {
-  //     console.log('shot');
-  //     this.createSparks(1, projectile, 2);
-  //   }
-  // }
 
   enemyHit(enemy, enemyIndex) {
     this.projectiles.forEach((projectile, projectileIndex) => {
