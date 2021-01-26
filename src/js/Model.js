@@ -4,9 +4,13 @@ import Projectile from './projectile';
 import Particle from './particle';
 import Enemy from './enemy';
 import StarsBackground from './starsBackground';
+import playSound from './utils/playSound';
+import playRandSound from './utils/playRandSound';
+// import sound from '../assets/laser.mp3';
+// import Sounds from './sounds';
 
 export default class Model {
-  constructor(canvas, scoreEl) {
+  constructor(canvas, scoreEl, sounds) {
     this.canvas = canvas;
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = window.innerWidth;
@@ -40,6 +44,8 @@ export default class Model {
     this.enemiesProjectiles = null;
 
     this.background = new StarsBackground(this.canvas, this.ctx);
+
+    this.sounds = sounds;
   }
 
   init() {
@@ -50,6 +56,7 @@ export default class Model {
     this.score = 0;
     this.enemiesProjectiles = [];
     this.background.initStars();
+    playSound(this.sounds.gameTheme, true);
   }
 
   spawnEnemies() {
@@ -158,10 +165,12 @@ export default class Model {
           this.player.health -= 1;
           this.createSparks(1, enemyProjectile, 2);
           this.enemiesProjectiles.splice(index, 1);
+          playSound(this.sounds.playerDamage);
         } else {
           this.createSparks(1, enemyProjectile, 4);
           cancelAnimationFrame(this.animationId);
           this.stopEnemySpawn();
+          playRandSound(this.sounds.explosions);
         }
       }
     });
@@ -190,10 +199,13 @@ export default class Model {
       healthEnemy.health -= 1;
       this.projectiles.splice(projectileIndex, 1);
       this.createSparks(enemy.type.width, projectile, 1);
+      playSound(this.sounds.damage);
     } else {
       this.enemies.splice(enemyIndex, 1);
       this.projectiles.splice(projectileIndex, 1);
       this.createSparks(enemy.type.width, projectile, 5);
+      playSound(this.sounds.damage);
+      playRandSound(this.sounds.explosions);
     }
   }
 
@@ -297,6 +309,9 @@ export default class Model {
         velocity,
       ),
     );
+
+    playSound(this.sounds.shot);
+    // playRandSound(this.sounds.enemyShots);
   }
 
   enemiesShoot() {
@@ -329,5 +344,6 @@ export default class Model {
         velocity,
       ),
     );
+    playRandSound(this.sounds.enemyShots);
   }
 }

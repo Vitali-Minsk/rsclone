@@ -105,6 +105,6 @@ export default [
     height: 116,
     health: 4,
     projectileColor: 'rgb(153, 51, 51)',
-    speed: 0.5,
+    speed: 1,
   },
 ];

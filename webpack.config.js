@@ -133,6 +133,10 @@ module.exports = {
         use: ['file-loader']
       },
       {
+        test: /\.(mp3|wav)$/,
+        use: ['file-loader']
+      },
+      {
         test: /\.(ttf|woff|woff2|eot)$/,
         use: ['file-loader']
       },
