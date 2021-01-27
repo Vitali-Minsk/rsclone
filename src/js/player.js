@@ -1,11 +1,5 @@
 import shipsImgSource from './shipsImgSource';
-// import imgDimaHeadRight from '../assets/dima-head.png';
-// import imgDimaHeadLeft from '../assets/dima-head-left.png';
-// import imgSpaceCraft from '../assets/space-craft.png';
 import imgSpaceCraft from '../assets/sprite-ships2.png';
-
-// const canvas = document.querySelector('canvas');
-// const ctx = canvas.getContext('2d');
 
 export default class Player {
   constructor(ctx, x, y, radius, color) {
@@ -17,7 +11,6 @@ export default class Player {
 
     this.img = new Image(10);
     this.img.src = imgSpaceCraft;
-    // this.img.width = 100;
     this.health = 3;
     this.type = null;
   }
@@ -25,13 +18,6 @@ export default class Player {
   draw(moveX, moveY) {
     this.x = moveX;
     this.y = moveY;
-    // this.ctx.beginPath();
-    // this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    // this.ctx.fillStyle = this.color;
-    // this.ctx.fill();
-    // this.ctx.drawImage(this.img,
-    //   34, 96, 102, 64,
-    //   this.x - 51, this.y - 32, 102, 64);
   }
 
   move(key) {
