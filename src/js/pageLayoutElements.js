@@ -13,10 +13,13 @@ export default {
   <div class="modal__inner">
     <h1 class="modal__score">0</h1>
     <p class="modal__text">Points</p>
-    <button class="modal__button">Start Game</button>
+    <button class="modal__button">New Game</button>
   </div>
 </div>`,
   score: `<div class="score">
   <span>Score: </span><span id="scoreEl">0</span>
+  </div>`,
+  health: `<div class="health">
+  <span>Health: </span><span id="healthEl">3</span>
   </div>`,
 };

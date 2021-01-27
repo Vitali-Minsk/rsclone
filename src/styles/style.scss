@@ -16,6 +16,19 @@ body {
   font-size: 18px;
   margin: 5px 0 0 5px;
   user-select: none;
+  left: 5px;
+  top: 5px;
+}
+
+.health {
+  position: fixed;
+  color: white;
+  font-size: 18px;
+  margin: 5px 0 0 5px;
+  user-select: none;
+  right: 10px;
+  top: 5px;
+  // width: 100px;
 }
 
 .modal {

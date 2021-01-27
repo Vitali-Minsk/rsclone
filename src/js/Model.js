@@ -4,21 +4,13 @@ import Projectile from './projectile';
 import Particle from './particle';
 import Enemy from './enemy';
 import StarsBackground from './starsBackground';
-import playSound from './utils/playSound';
-import playRandSound from './utils/playRandSound';
-// import sound from '../assets/laser.mp3';
-// import Sounds from './sounds';
 
 export default class Model {
-  constructor(canvas, scoreEl, sounds) {
-    this.canvas = canvas;
+  constructor() {
+    this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.scoreEl = scoreEl;
-    // this.startGameBtn = document.querySelector('.modal__button');
-    // this.modal = document.querySelector('.modal');
-    // this.modalScore = document.querySelector('.modal__score');
     this.x = this.canvas.width / 2;
     this.y = this.canvas.height / 2;
     this.player = new Player(this.ctx, this.x, this.y, 10, 'white');
@@ -44,8 +36,6 @@ export default class Model {
     this.enemiesProjectiles = null;
 
     this.background = new StarsBackground(this.canvas, this.ctx);
-
-    this.sounds = sounds;
   }
 
   init() {
@@ -56,7 +46,6 @@ export default class Model {
     this.score = 0;
     this.enemiesProjectiles = [];
     this.background.initStars();
-    playSound(this.sounds.gameTheme, true);
   }
 
   spawnEnemies() {
@@ -141,6 +130,7 @@ export default class Model {
 
       if (dist - projectile.radius < enemy.type.width / 2) {
         this.scoreIncrease();
+        this.createCanvasEvent('enemyHit');
         // this.createSparks(enemy.type.width, projectile);
         this.enemyDamage(enemy, projectile, projectileIndex, enemyIndex);
       }
@@ -151,26 +141,23 @@ export default class Model {
     const distEnem = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
     if (distEnem - enemy.type.width / 2 - this.player.type.width / 2 < 1) {
       cancelAnimationFrame(this.animationId);
-      // this.modal.classList.remove('modal_hidden');
-      // this.modalScore.innerHTML = this.score;
-      // this.updateScoreDisplay();
       this.stopEnemySpawn();
     }
     this.enemiesProjectiles.forEach((enemyProjectile, index) => {
       const distProj = Math.hypot(this.player.x - enemyProjectile.x,
         this.player.y - enemyProjectile.y);
       if (distProj - this.player.type.width / 2 < 1) {
-        // console.log(this.player.health);
-        if (this.player.health > 1) {
+        if (this.player.health >= 1) {
           this.player.health -= 1;
+          this.createCanvasEvent('playerHit');
           this.createSparks(1, enemyProjectile, 2);
           this.enemiesProjectiles.splice(index, 1);
-          playSound(this.sounds.playerDamage);
         } else {
           this.createSparks(1, enemyProjectile, 4);
           cancelAnimationFrame(this.animationId);
           this.stopEnemySpawn();
-          playRandSound(this.sounds.explosions);
+          this.createCanvasEvent('playerExplosion');
+          // stopSound(this.sounds.gameTheme);
         }
       }
     });
@@ -199,54 +186,17 @@ export default class Model {
       healthEnemy.health -= 1;
       this.projectiles.splice(projectileIndex, 1);
       this.createSparks(enemy.type.width, projectile, 1);
-      playSound(this.sounds.damage);
     } else {
       this.enemies.splice(enemyIndex, 1);
       this.projectiles.splice(projectileIndex, 1);
       this.createSparks(enemy.type.width, projectile, 5);
-      playSound(this.sounds.damage);
-      playRandSound(this.sounds.explosions);
+      this.createCanvasEvent('enemyExplosion');
     }
   }
 
   scoreIncrease() {
     this.score += 100;
-    this.scoreEl.innerHTML = this.score;
   }
-
-  windowEventListen() {
-    const mouseClickHandlerBind = (this.playerShot).bind(this);
-    window.addEventListener('click', mouseClickHandlerBind);
-
-    this.mouseMoveHandlerBind = (this.mouseMoveHandler).bind(this);
-    window.addEventListener('mousemove', this.mouseMoveHandlerBind);
-
-    window.addEventListener('keydown', (event) => {
-      if (event.code === 'KeyW' || event.code === 'KeyS' || event.code === 'KeyA' || event.code === 'KeyD') {
-        this.keys[event.code] = true;
-      }
-    });
-
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'KeyW' || event.code === 'KeyS' || event.code === 'KeyA' || event.code === 'KeyD') {
-        this.keys[event.code] = false;
-      }
-    });
-    window.addEventListener('keyup', (event) => {
-      if (event.code === 'KeyP') {
-        this.pauseGame();
-      }
-    });
-  }
-
-  // startBtnEventListener() {
-  //   this.startGameBtn.addEventListener('click', () => {
-  //     this.init();
-  //     this.animate();
-  //     this.spawnEnemies();
-  //     this.modal.classList.add('modal_hidden');
-  //   });
-  // }
 
   startNewGame() {
     this.init();
@@ -309,9 +259,6 @@ export default class Model {
         velocity,
       ),
     );
-
-    playSound(this.sounds.shot);
-    // playRandSound(this.sounds.enemyShots);
   }
 
   enemiesShoot() {
@@ -327,8 +274,6 @@ export default class Model {
 
   enemyShot(enemy) {
     const enemyAngle = enemy.angle;
-    // const enemyAngle = Math.atan2(event.clientY - this.y,
-    //   event.clientX - this.x);
     const velocity = {
       x: Math.cos(enemyAngle) * 3,
       y: Math.sin(enemyAngle) * 3,
@@ -344,6 +289,11 @@ export default class Model {
         velocity,
       ),
     );
-    playRandSound(this.sounds.enemyShots);
+    this.createCanvasEvent('enemyShot');
+  }
+
+  createCanvasEvent(eventName) {
+    const event = new Event(eventName);
+    this.canvas.dispatchEvent(event);
   }
 }

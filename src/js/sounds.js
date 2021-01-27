@@ -20,9 +20,7 @@ export default class Sounds {
 
   static createSound(path) {
     const sound = new Audio();
-    // shot.stop();
     sound.src = path;
-    // sou.play();
     return sound;
   }
 
@@ -33,5 +31,44 @@ export default class Sounds {
       soundsArr.push(sound);
     });
     return soundsArr;
+  }
+
+  static playSound(sound, isLoop) {
+    const audio = sound;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play();
+    if (isLoop) audio.loop = true;
+  }
+
+  static playRandSound(arr) {
+    const audio = arr[Math.floor(Math.random() * arr.length)];
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play();
+  }
+
+  playGameTheme() {
+    Sounds.playSound(this.gameSounds.gameTheme, true);
+  }
+
+  playPlayerHitSound() {
+    Sounds.playSound(this.gameSounds.playerDamage);
+  }
+
+  playExplosionSound() {
+    Sounds.playRandSound(this.gameSounds.explosions);
+  }
+
+  playEnemyHitSound() {
+    Sounds.playSound(this.gameSounds.damage);
+  }
+
+  playPlayerShotSound() {
+    Sounds.playSound(this.gameSounds.shot);
+  }
+
+  playEnemyShotSound() {
+    Sounds.playRandSound(this.gameSounds.enemyShots);
   }
 }
