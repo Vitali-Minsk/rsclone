@@ -22,4 +22,34 @@ export default {
   health: `<div class="health">
   <span>Health: </span><span id="healthEl">3</span>
   </div>`,
+  profileMenu: `
+  <div class="profile-menu">
+    <div class="profile-menu__form">
+      <h3 class="profile-menu__user-name">Enter your name:</h3>
+      <input class="profile-menu__input" placeholder="Player">
+    </div>
+    <h2 class="profile-menu__title">Choose spaceship</h2>
+      <div class="profile-menu__ship-wrapper">
+        <button class="profile-menu__btn-ship btn-prev"><</button>
+        <div class="profile-menu__ship">
+        <div class="profile-menu__img-container">
+          <div class="profile-menu__img"></div>
+        </div>
+        <div class="profile-menu__description">
+          <h3 class="profile-menu__ship-name">Falcone</h3>
+          <p class="profile-menu__text">Speed:
+          <span class="profile-menu__ship-speed"></span> Health:
+          <span class="profile-menu__ship-health"></span>, 
+          asfasf asfasf asfiea
+          </p>
+        </div>
+        
+      </div>
+      <button class="profile-menu__btn-ship btn-next">></button>
+      </div>
+      <div class="profile-menu__btn-wrapper">
+        <button class="profile-menu__btn-nav btn-main-menu">Main menu</button>
+        <button class="profile-menu__btn-nav btn-start-game">Start game</button>
+      </div>
+  </div>`,
 };

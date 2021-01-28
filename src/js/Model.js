@@ -38,8 +38,8 @@ export default class Model {
     this.background = new StarsBackground(this.canvas, this.ctx);
   }
 
-  init() {
-    this.player = new Player(this.ctx, this.x, this.y, 10, 'white');
+  init(shipIndex) {
+    this.player = new Player(this.ctx, this.x, this.y, 10, 'white', shipIndex);
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
@@ -198,8 +198,8 @@ export default class Model {
     this.score += 100;
   }
 
-  startNewGame() {
-    this.init();
+  startNewGame(ind) {
+    this.init(ind);
     this.animate();
     this.spawnEnemies();
     this.enemiesShoot();

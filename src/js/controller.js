@@ -1,10 +1,12 @@
 import View from './View';
 import Model from './Model';
+import spaceShips from './shipsImgSource';
 
 export default class Controller {
   constructor() {
     this.view = new View();
     this.model = new Model();
+    this.shipIndex = 0;
   }
 
   init() {
@@ -18,9 +20,10 @@ export default class Controller {
 
   menuEventHandlers(e) {
     if (e.target.innerHTML === 'New Game') {
-      this.view.newGameItemHandler();
-      this.model.startNewGame();
-      this.view.sounds.playGameTheme();
+      // this.view.newGameItemHandler();
+      // this.model.startNewGame();
+      // this.view.sounds.playGameTheme();
+      this.view.createProfileMenu();
     }
     if (e.target.innerHTML === 'Continue') {
       this.view.pauseEventHandler();
@@ -29,6 +32,30 @@ export default class Controller {
     if ((e.code === 'Escape' && e.type === 'keydown')) {
       this.view.pauseEventHandler();
       this.model.pauseGame();
+    }
+    if (e.target.innerHTML === 'Start game') {
+      this.view.newGameItemHandler();
+      this.model.startNewGame(this.shipIndex);
+      this.view.sounds.playGameTheme();
+    }
+    if (e.target.innerHTML === 'Main menu') {
+      this.view.createMainMenu();
+    }
+    if (e.target === this.view.buttons.prevShip) {
+      if (this.shipIndex > 0) {
+        this.shipIndex -= 1;
+        const currentShip = spaceShips[this.shipIndex];
+        this.view.updatecurrentShipDisplay(currentShip);
+      }
+      console.log('prev ship');
+    }
+    if (e.target === this.view.buttons.nextShip) {
+      if (this.shipIndex < 10) {
+        this.shipIndex += 1;
+        const currentShip = spaceShips[this.shipIndex];
+        this.view.updatecurrentShipDisplay(currentShip);
+      }
+      console.log('next ship');
     }
   }
 
