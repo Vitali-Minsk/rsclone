@@ -20,14 +20,18 @@ export default class Controller {
 
   menuEventHandlers(e) {
     if (e.target.innerHTML === 'New Game') {
-      // this.view.newGameItemHandler();
-      // this.model.startNewGame();
-      // this.view.sounds.playGameTheme();
       this.view.createProfileMenu();
     }
     if (e.target.innerHTML === 'Continue') {
       this.view.pauseEventHandler();
       this.model.pauseGame();
+    }
+    if (e.target.innerHTML === 'Save Game') {
+      this.model.saveGame();
+    }
+    if (e.target.innerHTML === 'Load Game') {
+      this.view.newGameItemHandler();
+      this.model.loadGame(this.updateDisplays.bind(this));
     }
     if ((e.code === 'Escape' && e.type === 'keydown')) {
       this.view.pauseEventHandler();
@@ -37,6 +41,7 @@ export default class Controller {
       this.view.newGameItemHandler();
       this.model.startNewGame(this.shipIndex);
       this.view.sounds.playGameTheme();
+      this.updateDisplays(this.model.score, this.model.player.health);
     }
     if (e.target.innerHTML === 'Main menu') {
       this.view.createMainMenu();
@@ -47,7 +52,6 @@ export default class Controller {
         const currentShip = spaceShips[this.shipIndex];
         this.view.updatecurrentShipDisplay(currentShip);
       }
-      console.log('prev ship');
     }
     if (e.target === this.view.buttons.nextShip) {
       if (this.shipIndex < 10) {
@@ -55,12 +59,10 @@ export default class Controller {
         const currentShip = spaceShips[this.shipIndex];
         this.view.updatecurrentShipDisplay(currentShip);
       }
-      console.log('next ship');
     }
   }
 
   canvasEventHandlers(e) {
-    // console.log(e.type);
     if (e.type === 'keydown' && (e.code === 'KeyW' || e.code === 'KeyS' || e.code === 'KeyA' || e.code === 'KeyD')) {
       this.model.keys[e.code] = true;
     } else if (e.type === 'keyup' && (e.code === 'KeyW' || e.code === 'KeyS' || e.code === 'KeyA' || e.code === 'KeyD')) {
@@ -88,7 +90,7 @@ export default class Controller {
     if (e.type === 'playerExplosion') {
       this.view.healthElUpdate(this.model.player.health);
       this.view.sounds.playExplosionSound();
-      this.view.createModal(this.model.score);
+      // this.view.createModal(this.model.score);
     }
     if (e.type === 'enemyExplosion') {
       this.view.sounds.playExplosionSound();
@@ -96,6 +98,11 @@ export default class Controller {
     if (e.type === 'enemyShot') {
       this.view.sounds.playEnemyShotSound();
     }
+  }
+
+  updateDisplays(currentScore, currentHealth) {
+    this.view.scoreElUpdate(currentScore);
+    this.view.healthElUpdate(currentHealth);
   }
 }
 //

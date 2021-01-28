@@ -8,7 +8,7 @@ export default class View {
     this.sounds = new Sounds();
     this.startPage = null;
     this.canvas = null;
-    this.mainMenu = pageLayoutElements.mainMenu;
+    // this.mainMenu = pageLayoutElements.mainMenu;
     this.scoreEl = null;
     this.scoreWrap = null;
     this.healthEl = null;
@@ -55,15 +55,12 @@ export default class View {
   }
 
   updatecurrentShipDisplay(ship) {
-    console.log(this.displays);
-    // this.displays.ship.img = document.querySelector('.profile-menu__img');
     this.displays.shipImg.style.backgroundPosition = `${-ship.x}px ${-ship.y}px`;
     this.displays.shipImg.style.width = `${ship.width}px`;
     this.displays.shipImg.style.height = `${ship.height}px`;
     this.displays.shipName.innerHTML = `${ship.name}`;
     this.displays.shipSpeed.innerHTML = `${ship.speed}`;
     this.displays.shipHealth.innerHTML = `${ship.health}`;
-    // this.displays.currentShipDisplay.innerHTML = ship;
   }
 
   renderCanvas(canvas) {
@@ -137,7 +134,7 @@ export default class View {
   }
 
   newGameItemHandler() {
-    // this.startPage.classList.add('hidden');
+    this.startPage.classList.add('hidden');
     this.createMainMenu();
     this.canvas.classList.remove('hidden');
     this.scoreWrap.classList.remove('hidden');

@@ -16,27 +16,6 @@ export default class Player {
     this.type = shipsImgSource[this.shipIndex];
   }
 
-  draw(moveX, moveY) {
-    this.x = moveX;
-    this.y = moveY;
-  }
-
-  move(key) {
-    if (key.KeyW) {
-      this.y -= 1;
-    }
-    if (key.KeyS) {
-      this.y += 1;
-    }
-    if (key.KeyA) {
-      this.x -= 1;
-    }
-    if (key.KeyD) {
-      this.x += 1;
-    }
-    this.draw();
-  }
-
   rotate(angle) {
     // Сохраняем настройки канваса до всяких манипуляций с ним
     this.ctx.save();
