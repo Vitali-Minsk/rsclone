@@ -8,7 +8,7 @@ export default class View {
     this.sounds = new Sounds();
     this.startPage = null;
     this.canvas = null;
-    this.mainMenu = pageLayoutElements.mainMenu;
+    // this.mainMenu = pageLayoutElements.mainMenu;
     this.scoreEl = null;
     this.scoreWrap = null;
     this.healthEl = null;
@@ -20,6 +20,9 @@ export default class View {
 
     this.menuEventHandlers = null;
     this.canvasEventHandlers = null;
+
+    this.buttons = {};
+    this.displays = {};
   }
 
   init() {
@@ -36,7 +39,28 @@ export default class View {
   }
 
   createMainMenu() {
-    this.startPage.insertAdjacentHTML('afterBegin', this.mainMenu);
+    this.startPage.innerHTML = '';
+    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.mainMenu);
+  }
+
+  createProfileMenu() {
+    this.startPage.innerHTML = '';
+    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.profileMenu);
+    this.buttons.prevShip = document.querySelector('.btn-prev');
+    this.buttons.nextShip = document.querySelector('.btn-next');
+    this.displays.shipImg = document.querySelector('.profile-menu__img');
+    this.displays.shipName = document.querySelector('.profile-menu__ship-name');
+    this.displays.shipSpeed = document.querySelector('.profile-menu__ship-speed');
+    this.displays.shipHealth = document.querySelector('.profile-menu__ship-health');
+  }
+
+  updatecurrentShipDisplay(ship) {
+    this.displays.shipImg.style.backgroundPosition = `${-ship.x}px ${-ship.y}px`;
+    this.displays.shipImg.style.width = `${ship.width}px`;
+    this.displays.shipImg.style.height = `${ship.height}px`;
+    this.displays.shipName.innerHTML = `${ship.name}`;
+    this.displays.shipSpeed.innerHTML = `${ship.speed}`;
+    this.displays.shipHealth.innerHTML = `${ship.health}`;
   }
 
   renderCanvas(canvas) {
@@ -111,6 +135,7 @@ export default class View {
 
   newGameItemHandler() {
     this.startPage.classList.add('hidden');
+    this.createMainMenu();
     this.canvas.classList.remove('hidden');
     this.scoreWrap.classList.remove('hidden');
     this.healthWrap.classList.remove('hidden');

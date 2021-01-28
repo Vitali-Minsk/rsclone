@@ -13,13 +13,13 @@ export default class Model {
     this.canvas.height = window.innerHeight;
     this.x = this.canvas.width / 2;
     this.y = this.canvas.height / 2;
-    this.player = new Player(this.ctx, this.x, this.y, 10, 'white');
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
     this.score = 0;
     this.animationId = null;
-    this.timeId = false;
+    this.timeIdEnemySpawn = null;
+    this.timeIdEnemyShot = null;
 
     this.playerAngle = 0;
     this.enemyAngle = 0;
@@ -38,8 +38,8 @@ export default class Model {
     this.background = new StarsBackground(this.canvas, this.ctx);
   }
 
-  init() {
-    this.player = new Player(this.ctx, this.x, this.y, 10, 'white');
+  init(shipIndex) {
+    this.player = new Player(this.ctx, this.x, this.y, 10, 'white', shipIndex);
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
@@ -49,7 +49,7 @@ export default class Model {
   }
 
   spawnEnemies() {
-    this.timeId = setInterval(() => {
+    this.timeIdEnemySpawn = setInterval(() => {
       let enemyX;
       let enemyY;
 
@@ -61,15 +61,15 @@ export default class Model {
         enemyY = Math.random() < 0.5 ? 0 - 50 : this.canvas.height + 50;
       }
       const enemy = new Enemy(this.ctx, enemyX, enemyY);
-      enemy.calculateAngle(this.x, this.y);
+      enemy.calculateAngle(this.player.x, this.player.y);
       enemy.create();
       this.enemies.push(enemy);
     }, 2000);
   }
 
-  stopEnemySpawn() {
-    clearInterval(this.timeId);
-  }
+  // stopEnemySpawn() {
+  //   clearInterval(this.timeIdEnemySpawn);
+  // }
 
   animate() {
     this.animationId = requestAnimationFrame(() => this.animate());
@@ -115,7 +115,7 @@ export default class Model {
     });
 
     this.enemies.forEach((enemy, index) => {
-      enemy.update(this.x, this.y);
+      enemy.update(this.player.x, this.player.y);
       // end game
       this.checkEndGame(enemy);
 
@@ -141,7 +141,9 @@ export default class Model {
     const distEnem = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
     if (distEnem - enemy.type.width / 2 - this.player.type.width / 2 < 1) {
       cancelAnimationFrame(this.animationId);
-      this.stopEnemySpawn();
+      clearInterval(this.timeIdEnemySpawn);
+      clearInterval(this.timeIdEnemyShot);
+      // this.stopEnemySpawn();
     }
     this.enemiesProjectiles.forEach((enemyProjectile, index) => {
       const distProj = Math.hypot(this.player.x - enemyProjectile.x,
@@ -154,10 +156,12 @@ export default class Model {
           this.enemiesProjectiles.splice(index, 1);
         } else {
           this.createSparks(1, enemyProjectile, 4);
-          cancelAnimationFrame(this.animationId);
-          this.stopEnemySpawn();
+          // this.stopEnemySpawn();
           this.createCanvasEvent('playerExplosion');
           // stopSound(this.sounds.gameTheme);
+          cancelAnimationFrame(this.animationId);
+          clearInterval(this.timeIdEnemySpawn);
+          clearInterval(this.timeIdEnemyShot);
         }
       }
     });
@@ -198,52 +202,58 @@ export default class Model {
     this.score += 100;
   }
 
-  startNewGame() {
-    this.init();
+  startNewGame(ind) {
+    // this.stopEnemySpawn();
+    cancelAnimationFrame(this.animationId);
+    clearInterval(this.timeIdEnemySpawn);
+    clearInterval(this.timeIdEnemyShot);
+
+    this.init(ind);
     this.animate();
     this.spawnEnemies();
     this.enemiesShoot();
+
+    this.isPause = false;
   }
 
   playerMove() {
     if (this.keys.KeyW) {
-      this.y -= this.player.type.speed;
+      this.player.y -= this.player.type.speed;
     }
     if (this.keys.KeyS) {
-      this.y += this.player.type.speed;
+      this.player.y += this.player.type.speed;
     }
     if (this.keys.KeyA) {
-      this.x -= this.player.type.speed;
+      this.player.x -= this.player.type.speed;
     }
     if (this.keys.KeyD) {
-      this.x += this.player.type.speed;
+      this.player.x += this.player.type.speed;
     }
-    this.player.draw(this.x, this.y);
+    // this.player.draw(this.x, this.y);
   }
 
   mouseMoveHandler(e) {
-    this.playerAngle = Math.atan2(e.clientY - this.y,
-      e.clientX - this.x);
+    this.playerAngle = Math.atan2(e.clientY - this.player.y,
+      e.clientX - this.player.x);
     this.player.rotate(this.playerAngle);
   }
 
   pauseGame() {
     if (!this.isPause) {
-      this.stopEnemySpawn();
+      // this.stopEnemySpawn();
+      clearInterval(this.timeIdEnemySpawn);
       cancelAnimationFrame(this.animationId);
       this.isPause = true;
-      window.removeEventListener('mousemove', this.mouseMoveHandlerBind);
     } else {
       this.animate();
       this.spawnEnemies();
       this.isPause = false;
-      window.addEventListener('mousemove', this.mouseMoveHandlerBind);
     }
   }
 
   playerShot(event) {
-    this.playerAngle = Math.atan2(event.clientY - this.y,
-      event.clientX - this.x);
+    this.playerAngle = Math.atan2(event.clientY - this.player.y,
+      event.clientX - this.player.x);
     const velocity = {
       x: Math.cos(this.playerAngle) * 5,
       y: Math.sin(this.playerAngle) * 5,
@@ -252,8 +262,8 @@ export default class Model {
     this.projectiles.push(
       new Projectile(
         this.ctx,
-        this.x,
-        this.y,
+        this.player.x,
+        this.player.y,
         2,
         'white',
         velocity,
@@ -262,7 +272,7 @@ export default class Model {
   }
 
   enemiesShoot() {
-    setInterval(() => {
+    this.timeIdEnemyShot = setInterval(() => {
       this.enemies.forEach((enemy, index) => {
         const indRand = Math.floor(Math.random() * this.enemies.length);
         if (indRand === index) {
@@ -295,5 +305,23 @@ export default class Model {
   createCanvasEvent(eventName) {
     const event = new Event(eventName);
     this.canvas.dispatchEvent(event);
+  }
+
+  saveGame() {
+    localStorage.setItem('player', JSON.stringify(this.player));
+    localStorage.setItem('enemies', JSON.stringify(this.enemies));
+    localStorage.setItem('score', JSON.stringify(this.score));
+  }
+
+  loadGame(func) {
+    const player = JSON.parse(localStorage.getItem('player'));
+    const enemies = JSON.parse(localStorage.getItem('enemies'));
+    const score = JSON.parse(localStorage.getItem('score'));
+    this.startNewGame(player.shipIndex);
+    this.player = Object.assign(this.player, player, { ctx: this.ctx, img: this.player.img });
+    this.enemies = enemies.map((enemy) => Object.assign(new Enemy(this.ctx, 0, 0), enemy,
+      { ctx: this.ctx, img: this.player.img }));
+    this.score = score;
+    func(this.score, this.player.health);
   }
 }
