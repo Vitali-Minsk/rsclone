@@ -8,7 +8,6 @@ export default class View {
     this.sounds = new Sounds();
     this.startPage = null;
     this.canvas = null;
-    // this.mainMenu = pageLayoutElements.mainMenu;
     this.scoreEl = null;
     this.scoreWrap = null;
     this.healthEl = null;
@@ -23,6 +22,10 @@ export default class View {
 
     this.buttons = {};
     this.displays = {};
+
+    this.options = {};
+
+    this.graphicsLevelValue = 100;
   }
 
   init() {
@@ -52,6 +55,23 @@ export default class View {
     this.displays.shipName = document.querySelector('.profile-menu__ship-name');
     this.displays.shipSpeed = document.querySelector('.profile-menu__ship-speed');
     this.displays.shipHealth = document.querySelector('.profile-menu__ship-health');
+  }
+
+  createOptionMenu() {
+    this.startPage.innerHTML = '';
+    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.optionsMenu);
+    this.options.musicVolumeRange = document.getElementById('musicVolume');
+    this.options.effectsVolumeRange = document.getElementById('effectsVolume');
+    this.options.musicVolumeRange.value = this.sounds.gameMusicVolume;
+    this.options.effectsVolumeRange.value = this.sounds.gameSfxVolume;
+    this.options.graphicsLevelRange = document.getElementById('graphicsLevel');
+    this.options.graphicsLevelRange.value = this.graphicsLevelValue;
+  }
+
+  createAboutPage() {
+    this.startPage.innerHTML = '';
+    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.about);
+    console.log('Author - Vitali Burakou');
   }
 
   updatecurrentShipDisplay(ship) {
@@ -102,6 +122,8 @@ export default class View {
   addMenuListenerEvents() {
     window.addEventListener('click', this.menuEventHandlers);
     window.addEventListener('keydown', this.menuEventHandlers);
+    window.addEventListener('input', this.menuEventHandlers);
+    window.addEventListener('mouseover', this.onHoverHandler.bind(this));
   }
 
   addCanvasListenerEvents() {
@@ -119,6 +141,8 @@ export default class View {
   removeMenuListenerEvents() {
     window.removeEventListener('click', this.menuEventHandlers);
     window.removeEventListener('keydown', this.menuEventHandlers);
+    window.removeEventListener('input', this.menuEventHandlers);
+    window.removeEventListener('mouseover', this.onHoverHandler.bind(this));
   }
 
   removeCanvasEventHandlers() {
@@ -151,7 +175,6 @@ export default class View {
       this.canvas.classList.add('hidden');
       this.scoreWrap.classList.add('hidden');
       this.healthWrap.classList.add('hidden');
-      console.log('pause');
       this.removeCanvasEventHandlers();
       this.addMenuListenerEvents();
       this.isGameRun = !this.isGameRun;
@@ -160,10 +183,15 @@ export default class View {
       this.canvas.classList.remove('hidden');
       this.scoreWrap.classList.remove('hidden');
       this.healthWrap.classList.remove('hidden');
-      console.log('pause');
       this.addCanvasListenerEvents();
       this.removeMenuListenerEvents();
       this.isGameRun = !this.isGameRun;
+    }
+  }
+
+  onHoverHandler(e) {
+    if (e.target.classList.contains('main-menu__item')) {
+      this.sounds.playHoverSound();
     }
   }
 }

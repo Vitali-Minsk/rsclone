@@ -21,6 +21,8 @@ export default class Model {
     this.timeIdEnemySpawn = null;
     this.timeIdEnemyShot = null;
 
+    this.numberSparks = 10;
+
     this.playerAngle = 0;
     this.enemyAngle = 0;
 
@@ -152,10 +154,10 @@ export default class Model {
         if (this.player.health >= 1) {
           this.player.health -= 1;
           this.createCanvasEvent('playerHit');
-          this.createSparks(1, enemyProjectile, 2);
+          this.createSparks(enemyProjectile, 2);
           this.enemiesProjectiles.splice(index, 1);
         } else {
-          this.createSparks(1, enemyProjectile, 4);
+          this.createSparks(enemyProjectile, 4);
           // this.stopEnemySpawn();
           this.createCanvasEvent('playerExplosion');
           // stopSound(this.sounds.gameTheme);
@@ -167,8 +169,8 @@ export default class Model {
     });
   }
 
-  createSparks(sparksNumber, projectile, particleSize) {
-    for (let i = 0; i < sparksNumber; i += 1) {
+  createSparks(projectile, particleSize) {
+    for (let i = 0; i < this.numberSparks; i += 1) {
       this.particles.push(new Particle(
         this.ctx,
         projectile.x,
@@ -189,11 +191,11 @@ export default class Model {
       const healthEnemy = enemy;
       healthEnemy.health -= 1;
       this.projectiles.splice(projectileIndex, 1);
-      this.createSparks(enemy.type.width, projectile, 1);
+      this.createSparks(projectile, 1);
     } else {
       this.enemies.splice(enemyIndex, 1);
       this.projectiles.splice(projectileIndex, 1);
-      this.createSparks(enemy.type.width, projectile, 5);
+      this.createSparks(projectile, 5);
       this.createCanvasEvent('enemyExplosion');
     }
   }

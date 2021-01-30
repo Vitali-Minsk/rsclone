@@ -10,6 +10,8 @@ import enemyShotSrc1 from '../assets/audio/shot-01.mp3';
 // import enemyShotSrc2 from '../assets/audio/shot-02.wav';
 // import enemyShotSrc3 from '../assets/audio/shot-03.wav';
 import enemyShotSrc4 from '../assets/audio/shot-04.wav';
+import audioHoverSrc from '../assets/audio/hover.wav';
+import audioClickSrc from '../assets/audio/click.wav';
 
 // const audioFiles = [];
 
@@ -39,5 +41,8 @@ export default {
     // enemyShot3: enemyShotSrc3,
     enemyShot4: enemyShotSrc4,
   },
-
+  uiSounds: {
+    hover: audioHoverSrc,
+    click: audioClickSrc,
+  },
 };
