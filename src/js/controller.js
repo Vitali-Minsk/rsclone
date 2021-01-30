@@ -40,6 +40,7 @@ export default class Controller {
       this.model.saveGame();
     }
     if (e.target.innerHTML === 'Load Game') {
+      if (!Model.checkSaves()) return;
       this.view.sounds.playClickSound();
       this.view.newGameItemHandler();
       this.model.loadGame(this.updateDisplays.bind(this));

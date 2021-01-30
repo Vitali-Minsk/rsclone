@@ -326,4 +326,13 @@ export default class Model {
     this.score = score;
     func(this.score, this.player.health);
   }
+
+  static checkSaves() {
+    if (!localStorage.getItem('player')
+    && !localStorage.getItem('enemies')
+    && !localStorage.getItem('score')) {
+      return false;
+    }
+    return true;
+  }
 }
