@@ -1,0 +1,65 @@
+// @import "roboto.css";
+// @import "~normalize.css";
+
+.about {
+  width: 100%;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+
+  &__title {
+    font-size: 2.4rem;
+    margin-bottom: 1.4rem;
+  }
+
+  &__text {
+    font-size: 2rem;
+    margin-top: 10px;
+  }
+
+  &__info-container {
+    // border: 1px solid #fff;
+    // background-color: rgba(31, 31, 20, 0.5);
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 15px;
+  }
+
+  &__btn-wrapper {
+    margin-top: 1rem;
+    width: 400px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__btn-nav {
+    // background-color: rgb(0, 102, 255);
+    background: none;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    font-size: 2rem;
+    color: #fff;
+    padding: 5px;
+  }
+
+  &__link {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.6rem;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    background-color: #fff;
+    margin: 5px;
+  }
+}
