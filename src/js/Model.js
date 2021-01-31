@@ -38,6 +38,12 @@ export default class Model {
     this.enemiesProjectiles = null;
 
     this.background = new StarsBackground(this.canvas, this.ctx);
+
+    this.spawnEnemiesInterval = 2000;
+    this.enemiesShotInterval = 500;
+    this.enemyProjectileSpeed = 3;
+
+    this.playerProjectileSpeed = 10;
   }
 
   init(shipIndex) {
@@ -48,6 +54,10 @@ export default class Model {
     this.score = 0;
     this.enemiesProjectiles = [];
     this.background.initStars();
+
+    this.spawnEnemiesInterval = 2000;
+    this.enemiesShotInterval = 500;
+    this.enemyProjectileSpeed = 3;
   }
 
   spawnEnemies() {
@@ -66,12 +76,8 @@ export default class Model {
       enemy.calculateAngle(this.player.x, this.player.y);
       enemy.create();
       this.enemies.push(enemy);
-    }, 2000);
+    }, this.spawnEnemiesInterval);
   }
-
-  // stopEnemySpawn() {
-  //   clearInterval(this.timeIdEnemySpawn);
-  // }
 
   animate() {
     this.animationId = requestAnimationFrame(() => this.animate());
@@ -112,8 +118,6 @@ export default class Model {
       ) {
         this.enemiesProjectiles.splice(index, 1);
       }
-
-      // this.playerHit(projectile);
     });
 
     this.enemies.forEach((enemy, index) => {
@@ -132,8 +136,8 @@ export default class Model {
 
       if (dist - projectile.radius < enemy.type.width / 2) {
         this.scoreIncrease();
+        this.difficultyLevelIncrease();
         this.createCanvasEvent('enemyHit');
-        // this.createSparks(enemy.type.width, projectile);
         this.enemyDamage(enemy, projectile, projectileIndex, enemyIndex);
       }
     });
@@ -145,7 +149,6 @@ export default class Model {
       cancelAnimationFrame(this.animationId);
       clearInterval(this.timeIdEnemySpawn);
       clearInterval(this.timeIdEnemyShot);
-      // this.stopEnemySpawn();
     }
     this.enemiesProjectiles.forEach((enemyProjectile, index) => {
       const distProj = Math.hypot(this.player.x - enemyProjectile.x,
@@ -158,9 +161,7 @@ export default class Model {
           this.enemiesProjectiles.splice(index, 1);
         } else {
           this.createSparks(enemyProjectile, 4);
-          // this.stopEnemySpawn();
           this.createCanvasEvent('playerExplosion');
-          // stopSound(this.sounds.gameTheme);
           cancelAnimationFrame(this.animationId);
           clearInterval(this.timeIdEnemySpawn);
           clearInterval(this.timeIdEnemyShot);
@@ -257,8 +258,8 @@ export default class Model {
     this.playerAngle = Math.atan2(event.clientY - this.player.y,
       event.clientX - this.player.x);
     const velocity = {
-      x: Math.cos(this.playerAngle) * 5,
-      y: Math.sin(this.playerAngle) * 5,
+      x: Math.cos(this.playerAngle) * this.playerProjectileSpeed,
+      y: Math.sin(this.playerAngle) * this.playerProjectileSpeed,
     };
 
     this.projectiles.push(
@@ -281,14 +282,14 @@ export default class Model {
           this.enemyShot(enemy);
         }
       });
-    }, 500);
+    }, this.enemiesShotInterval);
   }
 
   enemyShot(enemy) {
     const enemyAngle = enemy.angle;
     const velocity = {
-      x: Math.cos(enemyAngle) * 3,
-      y: Math.sin(enemyAngle) * 3,
+      x: Math.cos(enemyAngle) * this.enemyProjectileSpeed,
+      y: Math.sin(enemyAngle) * this.enemyProjectileSpeed,
     };
 
     this.enemiesProjectiles.push(
@@ -334,5 +335,24 @@ export default class Model {
       return false;
     }
     return true;
+  }
+
+  difficultyLevelIncrease() {
+    if (this.score > 100) {
+      if (this.spawnEnemiesInterval > 1500) {
+        clearInterval(this.timeIdEnemySpawn);
+        this.spawnEnemiesInterval -= 8;
+        this.spawnEnemies();
+      }
+      if (this.enemiesShotInterval > 100) {
+        clearInterval(this.timeIdEnemyShot);
+        this.enemiesShotInterval -= 0.5;
+        this.enemiesShoot();
+      }
+      if (this.enemyProjectileSpeed < 7) {
+        this.enemyProjectileSpeed += 0.001;
+      }
+      console.log(this.spawnEnemiesInterval, this.enemyProjectileSpeed, this.enemiesShotInterval);
+    }
   }
 }
