@@ -1,6 +1,7 @@
 import View from './View';
 import Model from './Model';
 import spaceShips from './shipsImgSource';
+import tooltipMessages from './tooltipMessage';
 
 export default class Controller {
   constructor() {
@@ -28,14 +29,20 @@ export default class Controller {
       this.view.updatecurrentShipDisplay(currentShip);
     }
     if (e.target.innerHTML === 'Continue') {
-      if (this.isFirstGame) return;
+      if (this.isFirstGame) {
+        this.view.createTooltip(tooltipMessages.failedContinue, 1000);
+        return;
+      }
       this.view.sounds.playClickSound();
       this.view.pauseEventHandler();
       this.model.pauseGame();
       this.view.sounds.pauseAllSounds();
     }
     if (e.target.innerHTML === 'Save Game') {
-      if (this.isFirstGame) return;
+      if (this.isFirstGame) {
+        this.view.createTooltip(tooltipMessages.failedSave, 1000);
+        return;
+      }
       this.view.sounds.playClickSound();
       this.model.saveGame();
     }
@@ -63,7 +70,11 @@ export default class Controller {
       this.view.sounds.playClickSound();
       this.view.newGameItemHandler();
       this.model.startNewGame(this.shipIndex);
-      if (!this.isFirstGame) this.view.sounds.pauseAllSounds();
+      if (!this.isFirstGame) {
+        this.view.sounds.pauseAllSounds();
+      } else {
+        this.view.createTooltip(tooltipMessages.startFirstGame, 10000);
+      }
       this.view.sounds.playGameTheme();
       this.updateDisplays(this.model.score, this.model.player.health);
       this.isFirstGame = false;

@@ -89,6 +89,12 @@ export default class View {
     this.canvas.classList.add('hidden');
   }
 
+  createTooltip(message, timer) {
+    const tooltip = createElement('div', 'tooltip', `<p class="tooltip__message">${message}</p>`);
+    this.body.prepend(tooltip);
+    setTimeout(() => tooltip.remove(), timer);
+  }
+
   createModal(currentScore) {
     this.body.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
     this.startGameBtn = document.querySelector('.modal__button');
