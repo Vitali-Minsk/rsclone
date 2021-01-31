@@ -1,6 +1,3 @@
-@import "roboto.css";
-@import "~normalize.css";
-
 .options {
   width: 100%;
   color: #fff;
@@ -9,7 +6,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  user-select: none;
 
   &__title {
     font-size: 2.4rem;
