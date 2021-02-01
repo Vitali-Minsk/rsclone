@@ -55,6 +55,7 @@ export default class View {
     this.displays.shipName = document.querySelector('.profile-menu__ship-name');
     this.displays.shipSpeed = document.querySelector('.profile-menu__ship-speed');
     this.displays.shipHealth = document.querySelector('.profile-menu__ship-health');
+    this.displays.shipLaser = document.querySelector('.profile-menu__ship-laser');
   }
 
   createOptionMenu() {
@@ -80,6 +81,7 @@ export default class View {
     this.displays.shipName.innerHTML = `${ship.name}`;
     this.displays.shipSpeed.innerHTML = `${ship.speed}`;
     this.displays.shipHealth.innerHTML = `${ship.health}`;
+    this.displays.shipLaser.innerHTML = `${ship.projectileSpeed}`;
   }
 
   renderCanvas(canvas) {

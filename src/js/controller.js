@@ -46,6 +46,7 @@ export default class Controller {
       }
       this.view.sounds.playClickSound();
       this.model.saveGame();
+      this.view.createTooltip(tooltipMessages.saveGame, 2000);
     }
     if (e.target.innerHTML === 'Load Game') {
       if (!Model.checkSaves()) return;
@@ -53,6 +54,7 @@ export default class Controller {
       this.view.sounds.playClickSound();
       this.view.newGameItemHandler();
       this.model.loadGame(this.updateDisplays.bind(this));
+      this.view.createTooltip(tooltipMessages.loadGame, 2000);
       if (!this.isFirstGame) this.view.sounds.pauseAllSounds();
       this.view.sounds.playGameTheme();
       this.isFirstGame = false;
