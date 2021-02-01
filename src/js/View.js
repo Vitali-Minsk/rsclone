@@ -71,7 +71,6 @@ export default class View {
   createAboutPage() {
     this.startPage.innerHTML = '';
     this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.about);
-    console.log('Author - Vitali Burakou');
   }
 
   updatecurrentShipDisplay(ship) {
@@ -96,9 +95,11 @@ export default class View {
   }
 
   createModal(currentScore) {
-    this.body.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
-    this.startGameBtn = document.querySelector('.modal__button');
-    this.modal = document.querySelector('.modal');
+    this.startPage.innerHTML = '';
+    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
+    // this.body.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
+    // this.startGameBtn = document.querySelector('.modal__button');
+    // this.modal = document.querySelector('.modal');
     this.modalScore = document.querySelector('.modal__score');
     this.modalScore.innerHTML = currentScore;
   }
@@ -137,7 +138,7 @@ export default class View {
     this.canvas.addEventListener('mousemove', this.canvasEventHandlers);
     this.canvas.addEventListener('enemyHit', this.canvasEventHandlers);
     this.canvas.addEventListener('playerHit', this.canvasEventHandlers);
-    this.canvas.addEventListener('playerExplosion', this.canvasEventHandlers);
+    this.canvas.addEventListener('gameOver', this.canvasEventHandlers);
     this.canvas.addEventListener('enemyExplosion', this.canvasEventHandlers);
     this.canvas.addEventListener('enemyShot', this.canvasEventHandlers);
     window.addEventListener('keyup', this.canvasEventHandlers);
@@ -156,7 +157,7 @@ export default class View {
     this.canvas.removeEventListener('mousemove', this.canvasEventHandlers);
     this.canvas.removeEventListener('enemyHit', this.canvasEventHandlers);
     this.canvas.removeEventListener('playerHit', this.canvasEventHandlers);
-    this.canvas.removeEventListener('playerExplosion', this.canvasEventHandlers);
+    this.canvas.removeEventListener('gameOver', this.canvasEventHandlers);
     this.canvas.removeEventListener('enemyExplosion', this.canvasEventHandlers);
     this.canvas.removeEventListener('enemyShot', this.canvasEventHandlers);
     window.removeEventListener('keyup', this.canvasEventHandlers);
@@ -176,21 +177,12 @@ export default class View {
   }
 
   pauseEventHandler() {
+    console.log('pause');
     if (this.isGameRun) {
-      this.startPage.classList.remove('hidden');
-      this.canvas.classList.add('hidden');
-      this.scoreWrap.classList.add('hidden');
-      this.healthWrap.classList.add('hidden');
-      this.removeCanvasEventHandlers();
-      this.addMenuListenerEvents();
+      this.showStartPage();
       this.isGameRun = !this.isGameRun;
     } else {
-      this.startPage.classList.add('hidden');
-      this.canvas.classList.remove('hidden');
-      this.scoreWrap.classList.remove('hidden');
-      this.healthWrap.classList.remove('hidden');
-      this.addCanvasListenerEvents();
-      this.removeMenuListenerEvents();
+      this.showGamePage();
       this.isGameRun = !this.isGameRun;
     }
   }
@@ -199,5 +191,23 @@ export default class View {
     if (e.target.classList.contains('main-menu__item')) {
       this.sounds.playHoverSound();
     }
+  }
+
+  showStartPage() {
+    this.startPage.classList.remove('hidden');
+    this.canvas.classList.add('hidden');
+    this.scoreWrap.classList.add('hidden');
+    this.healthWrap.classList.add('hidden');
+    this.removeCanvasEventHandlers();
+    this.addMenuListenerEvents();
+  }
+
+  showGamePage() {
+    this.startPage.classList.add('hidden');
+    this.canvas.classList.remove('hidden');
+    this.scoreWrap.classList.remove('hidden');
+    this.healthWrap.classList.remove('hidden');
+    this.addCanvasListenerEvents();
+    this.removeMenuListenerEvents();
   }
 }

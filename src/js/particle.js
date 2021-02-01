@@ -1,6 +1,3 @@
-// const canvas = document.querySelector('canvas');
-// const ctx = canvas.getContext('2d');
-
 export default class Particle {
   constructor(ctx, x, y, radius, color, velocity) {
     this.ctx = ctx;
@@ -30,6 +27,5 @@ export default class Particle {
     this.x += this.velocity.x;
     this.y += this.velocity.y;
     this.alpha -= 0.01;
-    // console.log(this.alpha)
   }
 }
