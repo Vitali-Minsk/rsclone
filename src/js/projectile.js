@@ -1,6 +1,3 @@
-// const canvas = document.querySelector('canvas');
-// const ctx = canvas.getContext('2d');
-
 export default class Projectile {
   constructor(ctx, x, y, radius, color, velocity) {
     this.ctx = ctx;

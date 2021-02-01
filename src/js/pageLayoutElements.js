@@ -11,9 +11,13 @@ export default {
   </div>`,
   modal: `<div class="modal">
   <div class="modal__inner">
-    <h1 class="modal__score">0</h1>
+  <h2 class="modal__message">GAME OVER</h2>
+    <p class="modal__score">0</p>
     <p class="modal__text">Points</p>
-    <button class="modal__button">New Game</button>
+  <div class="profile-menu__btn-wrapper">
+    <button class="profile-menu__btn-nav btn btn-main-menu">Main menu</button>
+    <button class="profile-menu__btn-nav btn btn-start-game">Start game</button>
+  </div>
   </div>
 </div>`,
   score: `<div class="score">

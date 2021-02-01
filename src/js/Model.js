@@ -4,6 +4,7 @@ import Projectile from './projectile';
 import Particle from './particle';
 import Enemy from './enemy';
 import StarsBackground from './starsBackground';
+import Explosion from './explosion';
 
 export default class Model {
   constructor() {
@@ -39,11 +40,14 @@ export default class Model {
 
     this.background = new StarsBackground(this.canvas, this.ctx);
 
-    this.spawnEnemiesInterval = 2000;
-    this.enemiesShotInterval = 500;
-    this.enemyProjectileSpeed = 3;
+    this.difficultyLevel = {};
+    // this.spawnEnemiesInterval = 2000;
+    // this.enemiesShotInterval = 500;
+    // this.enemyProjectileSpeed = 3;
 
     this.playerProjectileSpeed = 10;
+
+    this.explosions = [];
   }
 
   init(shipIndex) {
@@ -55,9 +59,11 @@ export default class Model {
     this.enemiesProjectiles = [];
     this.background.initStars();
 
-    this.spawnEnemiesInterval = 2000;
-    this.enemiesShotInterval = 500;
-    this.enemyProjectileSpeed = 3;
+    this.difficultyLevel = {
+      spawnEnemiesInterval: 2000,
+      enemiesShotInterval: 500,
+      enemyProjectileSpeed: 3,
+    };
   }
 
   spawnEnemies() {
@@ -76,7 +82,7 @@ export default class Model {
       enemy.calculateAngle(this.player.x, this.player.y);
       enemy.create();
       this.enemies.push(enemy);
-    }, this.spawnEnemiesInterval);
+    }, this.difficultyLevel.spawnEnemiesInterval);
   }
 
   animate() {
@@ -91,6 +97,13 @@ export default class Model {
         this.particles.splice(index, 1);
       } else {
         particle.update();
+      }
+    });
+    this.explosions.forEach((explosion, index) => {
+      if (explosion.index >= 63) {
+        this.explosions.splice(1, index);
+      } else {
+        explosion.render();
       }
     });
     this.projectiles.forEach((projectile, index) => {
@@ -123,7 +136,7 @@ export default class Model {
     this.enemies.forEach((enemy, index) => {
       enemy.update(this.player.x, this.player.y);
       // end game
-      this.checkEndGame(enemy);
+      this.checkEndGame(enemy, index);
 
       // hit the enemy
       this.enemyHit(enemy, index);
@@ -143,12 +156,14 @@ export default class Model {
     });
   }
 
-  checkEndGame(enemy) {
+  checkEndGame(enemy, enemyIndex) {
     const distEnem = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
     if (distEnem - enemy.type.width / 2 - this.player.type.width / 2 < 1) {
-      cancelAnimationFrame(this.animationId);
-      clearInterval(this.timeIdEnemySpawn);
-      clearInterval(this.timeIdEnemyShot);
+      this.gameOver();
+      this.enemies.splice(enemyIndex, 1);
+      // this.createSparks(projectile, 5);
+      this.createCanvasEvent('enemyExplosion');
+      this.createExplosion({ x: enemy.x, y: enemy.y });
     }
     this.enemiesProjectiles.forEach((enemyProjectile, index) => {
       const distProj = Math.hypot(this.player.x - enemyProjectile.x,
@@ -161,10 +176,7 @@ export default class Model {
           this.enemiesProjectiles.splice(index, 1);
         } else {
           this.createSparks(enemyProjectile, 4);
-          this.createCanvasEvent('playerExplosion');
-          cancelAnimationFrame(this.animationId);
-          clearInterval(this.timeIdEnemySpawn);
-          clearInterval(this.timeIdEnemyShot);
+          this.gameOver();
         }
       }
     });
@@ -198,6 +210,7 @@ export default class Model {
       this.projectiles.splice(projectileIndex, 1);
       this.createSparks(projectile, 5);
       this.createCanvasEvent('enemyExplosion');
+      this.createExplosion({ x: enemy.x, y: enemy.y });
     }
   }
 
@@ -282,14 +295,14 @@ export default class Model {
           this.enemyShot(enemy);
         }
       });
-    }, this.enemiesShotInterval);
+    }, this.difficultyLevel.enemiesShotInterval);
   }
 
   enemyShot(enemy) {
     const enemyAngle = enemy.angle;
     const velocity = {
-      x: Math.cos(enemyAngle) * this.enemyProjectileSpeed,
-      y: Math.sin(enemyAngle) * this.enemyProjectileSpeed,
+      x: Math.cos(enemyAngle) * this.difficultyLevel.enemyProjectileSpeed,
+      y: Math.sin(enemyAngle) * this.difficultyLevel.enemyProjectileSpeed,
     };
 
     this.enemiesProjectiles.push(
@@ -314,18 +327,21 @@ export default class Model {
     localStorage.setItem('player', JSON.stringify(this.player));
     localStorage.setItem('enemies', JSON.stringify(this.enemies));
     localStorage.setItem('score', JSON.stringify(this.score));
+    localStorage.setItem('difficultyLevel', JSON.stringify(this.difficultyLevel));
   }
 
   loadGame(func) {
     const player = JSON.parse(localStorage.getItem('player'));
     const enemies = JSON.parse(localStorage.getItem('enemies'));
     const score = JSON.parse(localStorage.getItem('score'));
+    const difficultyLevel = JSON.parse(localStorage.getItem('difficultyLevel'));
     this.startNewGame(player.shipIndex);
     this.player = Object.assign(this.player, player, { ctx: this.ctx, img: this.player.img });
     this.enemies = enemies.map((enemy) => Object.assign(new Enemy(this.ctx, 0, 0), enemy,
       { ctx: this.ctx, img: this.player.img }));
     this.score = score;
     func(this.score, this.player.health);
+    this.difficultyLevel = difficultyLevel;
   }
 
   static checkSaves() {
@@ -339,20 +355,34 @@ export default class Model {
 
   difficultyLevelIncrease() {
     if (this.score > 100) {
-      if (this.spawnEnemiesInterval > 1500) {
+      if (this.difficultyLevel.spawnEnemiesInterval > 1500) {
         clearInterval(this.timeIdEnemySpawn);
-        this.spawnEnemiesInterval -= 8;
+        this.difficultyLevel.spawnEnemiesInterval -= 8;
         this.spawnEnemies();
       }
-      if (this.enemiesShotInterval > 100) {
+      if (this.difficultyLevel.enemiesShotInterval > 100) {
         clearInterval(this.timeIdEnemyShot);
-        this.enemiesShotInterval -= 0.5;
+        this.difficultyLevel.enemiesShotInterval -= 0.5;
         this.enemiesShoot();
       }
-      if (this.enemyProjectileSpeed < 7) {
-        this.enemyProjectileSpeed += 0.001;
+      if (this.difficultyLevel.enemyProjectileSpeed < 7) {
+        this.difficultyLevel.enemyProjectileSpeed += 0.001;
       }
-      console.log(this.spawnEnemiesInterval, this.enemyProjectileSpeed, this.enemiesShotInterval);
     }
+  }
+
+  createExplosion(pos) {
+    const explosion = new Explosion(this.ctx, pos);
+    this.explosions.push(explosion);
+  }
+
+  gameOver() {
+    this.createCanvasEvent('gameOver');
+    this.createExplosion({ x: this.player.x, y: this.player.y });
+    this.player.x = -1000;
+    this.player.y = -1000;
+    clearInterval(this.timeIdEnemySpawn);
+    clearInterval(this.timeIdEnemyShot);
+    setTimeout(() => cancelAnimationFrame(this.animationId), 1000);
   }
 }

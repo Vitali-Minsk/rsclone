@@ -32,40 +32,6 @@ html, body{
   top: 5px;
 }
 
-.modal {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  width: auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 5px;
-}
-
-.modal__inner {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 450px;
-}
-
-.modal__button {
-  background-color: #27b6f8;
-  border-radius: 50px;
-  border-color: #39bcf8;
-  padding: 10px;
-  margin-top: 10px;
-  width: 100%;
-  color: #fff;
-}
-
-.modal_hidden {
-  display: none;
-}
-
 canvas {
   cursor: crosshair;
 }

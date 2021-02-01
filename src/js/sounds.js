@@ -62,7 +62,6 @@ export default class Sounds {
     audio.currentTime = 0;
     audio.volume = this.gameSfxVolume;
     audio.play();
-    // audio.play();
   }
 
   static pauseSounds(arr) {
@@ -73,8 +72,6 @@ export default class Sounds {
       } else {
         audio.muted = true;
       }
-      // sound.pause();
-      // sound.currentTime = 0;
     });
   }
 
@@ -95,7 +92,6 @@ export default class Sounds {
   }
 
   pausePlayerHitSound() {
-    // this.gameSounds.playerDamage.pause();
     if (this.gameSounds.playerDamage.muted) {
       this.gameSounds.playerDamage.muted = false;
     } else {
@@ -116,7 +112,6 @@ export default class Sounds {
   }
 
   pauseEnemyHitSound() {
-    // this.gameSounds.damage.pause();
     if (this.gameSounds.damage.muted) {
       this.gameSounds.damage.muted = false;
     } else {
@@ -129,7 +124,6 @@ export default class Sounds {
   }
 
   pausePlayerShotSound() {
-    // this.gameSounds.shot.pause();
     if (this.gameSounds.shot.muted) {
       this.gameSounds.shot.muted = false;
     } else {
@@ -153,11 +147,6 @@ export default class Sounds {
     this.pausePlayerShotSound();
     this.pauseEnemyShotSound();
   }
-
-  // getAllSfxArray() {
-  //   const allSfxArr = Object.values(this.gameSounds).flat();
-  //   return allSfxArr.slice(1, allSfxArr.length);
-  // }
 
   playHoverSound() {
     this.playSound(this.menuSounds.audioHover);

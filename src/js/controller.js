@@ -9,6 +9,7 @@ export default class Controller {
     this.model = new Model();
     this.shipIndex = 0;
     this.isFirstGame = true;
+    this.gameOver = false;
   }
 
   init() {
@@ -28,7 +29,7 @@ export default class Controller {
       const currentShip = spaceShips[this.shipIndex];
       this.view.updatecurrentShipDisplay(currentShip);
     }
-    if (e.target.innerHTML === 'Continue') {
+    if (e.target.innerHTML === 'Continue' && !this.gameOver) {
       if (this.isFirstGame) {
         this.view.createTooltip(tooltipMessages.failedContinue, 1000);
         return;
@@ -38,7 +39,7 @@ export default class Controller {
       this.model.pauseGame();
       this.view.sounds.pauseAllSounds();
     }
-    if (e.target.innerHTML === 'Save Game') {
+    if (e.target.innerHTML === 'Save Game' && !this.gameOver) {
       if (this.isFirstGame) {
         this.view.createTooltip(tooltipMessages.failedSave, 1000);
         return;
@@ -48,6 +49,7 @@ export default class Controller {
     }
     if (e.target.innerHTML === 'Load Game') {
       if (!Model.checkSaves()) return;
+      this.gameOver = false;
       this.view.sounds.playClickSound();
       this.view.newGameItemHandler();
       this.model.loadGame(this.updateDisplays.bind(this));
@@ -59,7 +61,7 @@ export default class Controller {
       this.view.sounds.playClickSound();
       this.view.createOptionMenu();
     }
-    if ((e.code === 'Escape' && e.type === 'keydown')) {
+    if ((e.code === 'Escape' && e.type === 'keydown' && !this.gameOver)) {
       if (this.isFirstGame) return;
       this.view.sounds.playClickSound();
       this.view.pauseEventHandler();
@@ -67,13 +69,14 @@ export default class Controller {
       this.view.sounds.pauseAllSounds();
     }
     if (e.target.innerHTML === 'Start game') {
+      this.gameOver = false;
       this.view.sounds.playClickSound();
       this.view.newGameItemHandler();
       this.model.startNewGame(this.shipIndex);
       if (!this.isFirstGame) {
         this.view.sounds.pauseAllSounds();
       } else {
-        this.view.createTooltip(tooltipMessages.startFirstGame, 10000);
+        this.view.createTooltip(tooltipMessages.startFirstGame, 5000);
       }
       this.view.sounds.playGameTheme();
       this.updateDisplays(this.model.score, this.model.player.health);
@@ -133,7 +136,7 @@ export default class Controller {
       this.model.playerShot(e);
       this.view.sounds.playPlayerShotSound();
     }
-    if ((e.code === 'Escape' && e.type === 'keydown')) {
+    if ((e.code === 'Escape' && e.type === 'keydown' && !this.gameOver)) {
       if (this.isFirstGame) return;
       this.view.sounds.playClickSound();
       this.view.pauseEventHandler();
@@ -148,12 +151,19 @@ export default class Controller {
       this.view.healthElUpdate(this.model.player.health);
       this.view.sounds.playPlayerHitSound();
     }
-    if (e.type === 'playerExplosion') {
+    if (e.type === 'gameOver') {
+      this.gameOver = true;
       this.view.healthElUpdate(this.model.player.health);
       this.view.sounds.playExplosionSound();
+      setTimeout(() => {
+        this.view.sounds.pauseAllSounds();
+        this.view.createModal(this.model.score);
+        this.view.showStartPage();
+      }, 1000);
     }
     if (e.type === 'enemyExplosion') {
       this.view.sounds.playExplosionSound();
+      // this.model.createExplosion();
     }
     if (e.type === 'enemyShot') {
       this.view.sounds.playEnemyShotSound();

@@ -7,24 +7,11 @@ import explosionSrc2 from '../assets/audio/explosion-02.mp3';
 import explosionSrc3 from '../assets/audio/explosion-03.mp3';
 import explosionSrc4 from '../assets/audio/explosion-04.wav';
 import enemyShotSrc1 from '../assets/audio/shot-01.mp3';
-// import enemyShotSrc2 from '../assets/audio/shot-02.wav';
-// import enemyShotSrc3 from '../assets/audio/shot-03.wav';
 import enemyShotSrc4 from '../assets/audio/shot-04.wav';
 import audioHoverSrc from '../assets/audio/hover.wav';
 import audioClickSrc from '../assets/audio/click.wav';
 
-// const audioFiles = [];
-
-// function importAll(r) {
-//   // eslint-disable-next-line no-return-assign
-//   r.keys().forEach((s, i) => audioFiles[i] = r(s));
-// }
-
-// importAll(require.context('../assets/audio/', true, /\.mp3$/));
-// console.log(a);
-
 export default {
-  // eslint-disable-next-line global-require
   gameTheme: mainTheme,
   shot: laser,
   damage: damage1,
@@ -37,8 +24,6 @@ export default {
   },
   enemyShots: {
     enemyShot1: enemyShotSrc1,
-    // enemyShot2: enemyShotSrc2,
-    // enemyShot3: enemyShotSrc3,
     enemyShot4: enemyShotSrc4,
   },
   uiSounds: {
