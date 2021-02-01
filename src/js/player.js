@@ -12,8 +12,8 @@ export default class Player {
 
     this.img = new Image(10);
     this.img.src = imgSpaceCraft;
-    this.health = 3;
     this.type = shipsImgSource[this.shipIndex];
+    this.health = this.type.health;
   }
 
   rotate(angle) {

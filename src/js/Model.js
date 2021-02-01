@@ -147,11 +147,25 @@ export default class Model {
     this.projectiles.forEach((projectile, projectileIndex) => {
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
-      if (dist - projectile.radius < enemy.type.width / 2) {
-        this.scoreIncrease();
+      if (dist - projectile.radius < (enemy.type.width + enemy.type.height) / 4 + 5) {
         this.difficultyLevelIncrease();
         this.createCanvasEvent('enemyHit');
-        this.enemyDamage(enemy, projectile, projectileIndex, enemyIndex);
+        // this.enemyDamage(enemy, projectile, projectileIndex, enemyIndex);
+        const currentEnemy = enemy;
+        currentEnemy.health -= this.player.type.projectileSpeed;
+        // console.log(enemy.health);
+        if (enemy.health > 0) {
+          this.projectiles.splice(projectileIndex, 1);
+          this.createSparks(projectile, 1);
+          this.scoreIncrease(100);
+        } else {
+          this.enemies.splice(enemyIndex, 1);
+          this.projectiles.splice(projectileIndex, 1);
+          this.createSparks(projectile, 5);
+          this.createCanvasEvent('enemyExplosion');
+          this.createExplosion({ x: enemy.x, y: enemy.y });
+          this.scoreIncrease(300);
+        }
       }
     });
   }
@@ -168,7 +182,7 @@ export default class Model {
     this.enemiesProjectiles.forEach((enemyProjectile, index) => {
       const distProj = Math.hypot(this.player.x - enemyProjectile.x,
         this.player.y - enemyProjectile.y);
-      if (distProj - this.player.type.width / 2 < 1) {
+      if (distProj - (this.player.type.width + this.player.type.height) / 4 < 1) {
         if (this.player.health >= 1) {
           this.player.health -= 1;
           this.createCanvasEvent('playerHit');
@@ -198,24 +212,12 @@ export default class Model {
     }
   }
 
-  enemyDamage(enemy, projectile, projectileIndex, enemyIndex) {
-    if (enemy.health > 1) {
-      // gsap.to(enemy, {
-      const healthEnemy = enemy;
-      healthEnemy.health -= 1;
-      this.projectiles.splice(projectileIndex, 1);
-      this.createSparks(projectile, 1);
-    } else {
-      this.enemies.splice(enemyIndex, 1);
-      this.projectiles.splice(projectileIndex, 1);
-      this.createSparks(projectile, 5);
-      this.createCanvasEvent('enemyExplosion');
-      this.createExplosion({ x: enemy.x, y: enemy.y });
-    }
-  }
+  // enemyDamage(enemy, projectile, projectileIndex, enemyIndex) {
 
-  scoreIncrease() {
-    this.score += 100;
+  // }
+
+  scoreIncrease(num) {
+    this.score += num;
   }
 
   startNewGame(ind) {
@@ -234,16 +236,16 @@ export default class Model {
 
   playerMove() {
     if (this.keys.KeyW) {
-      this.player.y -= this.player.type.speed;
+      this.player.y -= this.player.type.speed * 1.4;
     }
     if (this.keys.KeyS) {
-      this.player.y += this.player.type.speed;
+      this.player.y += this.player.type.speed * 1.4;
     }
     if (this.keys.KeyA) {
-      this.player.x -= this.player.type.speed;
+      this.player.x -= this.player.type.speed * 1.4;
     }
     if (this.keys.KeyD) {
-      this.player.x += this.player.type.speed;
+      this.player.x += this.player.type.speed * 1.4;
     }
     // this.player.draw(this.x, this.y);
   }
@@ -271,8 +273,8 @@ export default class Model {
     this.playerAngle = Math.atan2(event.clientY - this.player.y,
       event.clientX - this.player.x);
     const velocity = {
-      x: Math.cos(this.playerAngle) * this.playerProjectileSpeed,
-      y: Math.sin(this.playerAngle) * this.playerProjectileSpeed,
+      x: Math.cos(this.playerAngle) * this.player.type.projectileSpeed,
+      y: Math.sin(this.playerAngle) * this.player.type.projectileSpeed,
     };
 
     this.projectiles.push(
@@ -335,13 +337,13 @@ export default class Model {
     const enemies = JSON.parse(localStorage.getItem('enemies'));
     const score = JSON.parse(localStorage.getItem('score'));
     const difficultyLevel = JSON.parse(localStorage.getItem('difficultyLevel'));
+    this.difficultyLevel = difficultyLevel;
     this.startNewGame(player.shipIndex);
     this.player = Object.assign(this.player, player, { ctx: this.ctx, img: this.player.img });
     this.enemies = enemies.map((enemy) => Object.assign(new Enemy(this.ctx, 0, 0), enemy,
       { ctx: this.ctx, img: this.player.img }));
     this.score = score;
     func(this.score, this.player.health);
-    this.difficultyLevel = difficultyLevel;
   }
 
   static checkSaves() {
@@ -355,9 +357,9 @@ export default class Model {
 
   difficultyLevelIncrease() {
     if (this.score > 100) {
-      if (this.difficultyLevel.spawnEnemiesInterval > 1500) {
+      if (this.difficultyLevel.spawnEnemiesInterval > 1000) {
         clearInterval(this.timeIdEnemySpawn);
-        this.difficultyLevel.spawnEnemiesInterval -= 8;
+        this.difficultyLevel.spawnEnemiesInterval -= 15;
         this.spawnEnemies();
       }
       if (this.difficultyLevel.enemiesShotInterval > 100) {

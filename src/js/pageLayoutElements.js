@@ -43,8 +43,8 @@ export default {
           <h3 class="profile-menu__ship-name">Falcone</h3>
           <p class="profile-menu__text">Speed:
           <span class="profile-menu__ship-speed"></span> Health:
-          <span class="profile-menu__ship-health"></span>, 
-          asfasf asfasf asfiea
+          <span class="profile-menu__ship-health"></span> Laser:
+          <span class="profile-menu__ship-laser"></span>
           </p>
         </div>
       </div>
@@ -70,10 +70,6 @@ export default {
     <div class="options__slide-container">
       <p class="options__slider-description">Graphics level:</p>
       <input type="range" min="0" max="100" value="100" step="1" class="slider" id="graphicsLevel">
-    </div>
-    <div class="options__slide-container">
-      <p class="options__slider-description">Bonuses:</p>
-      <input type="range" min="1" max="100" value="50" step="10" class="slider" id="bonuses">
     </div>
     <div class="options__btn-wrapper">
       <button class="options__btn-nav btn btn-main-menu">Main menu</button>
