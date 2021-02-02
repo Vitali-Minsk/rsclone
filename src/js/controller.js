@@ -2,6 +2,8 @@ import View from './View';
 import Model from './Model';
 import spaceShips from './shipsImgSource';
 import tooltipMessages from './tooltipMessage';
+// import Data from './topList';
+import sendRequest from './data';
 
 export default class Controller {
   constructor() {
@@ -10,6 +12,7 @@ export default class Controller {
     this.shipIndex = 0;
     this.isFirstGame = true;
     this.gameOver = false;
+    // this.data = new Data();
   }
 
   init() {
@@ -58,6 +61,19 @@ export default class Controller {
       if (!this.isFirstGame) this.view.sounds.pauseAllSounds();
       this.view.sounds.playGameTheme();
       this.isFirstGame = false;
+    }
+    if (e.target.innerHTML === 'Top List') {
+      this.view.sounds.playClickSound();
+      this.view.createTopPage();
+      // sendRequest('POST', { name: 'Dima', score: 123123 });
+      sendRequest('GET')
+        .then((data) => {
+          console.log(data);
+          // this.view.userName.innerHTML = data.name;
+          // this.view.userScore.innerHTML = data.age;
+          this.view.createTopList(data);
+        })
+        .catch((err) => console.log(err));
     }
     if (e.target.innerHTML === 'Options') {
       this.view.sounds.playClickSound();
@@ -123,6 +139,10 @@ export default class Controller {
       this.view.sounds.playClickSound();
       this.view.createAboutPage();
     }
+    if (e.target === this.view.userNameInput) {
+      this.model.userName = this.view.userNameInput.value;
+      // console.log(this.model.userName);
+    }
   }
 
   canvasEventHandlers(e) {
@@ -157,6 +177,7 @@ export default class Controller {
       this.gameOver = true;
       this.view.healthElUpdate(this.model.player.health);
       this.view.sounds.playExplosionSound();
+      sendRequest('POST', { name: this.model.userName || 'Player', score: this.model.score });
       setTimeout(() => {
         this.view.sounds.pauseAllSounds();
         this.view.createModal(this.model.score);

@@ -26,6 +26,10 @@ export default class View {
     this.options = {};
 
     this.graphicsLevelValue = 100;
+
+    this.topPage = null;
+    this.userName = null;
+    this.userScore = null;
   }
 
   init() {
@@ -56,6 +60,7 @@ export default class View {
     this.displays.shipSpeed = document.querySelector('.profile-menu__ship-speed');
     this.displays.shipHealth = document.querySelector('.profile-menu__ship-health');
     this.displays.shipLaser = document.querySelector('.profile-menu__ship-laser');
+    this.userNameInput = document.querySelector('.profile-menu__input');
   }
 
   createOptionMenu() {
@@ -67,6 +72,23 @@ export default class View {
     this.options.effectsVolumeRange.value = this.sounds.gameSfxVolume;
     this.options.graphicsLevelRange = document.getElementById('graphicsLevel');
     this.options.graphicsLevelRange.value = this.graphicsLevelValue;
+  }
+
+  createTopPage() {
+    this.startPage.innerHTML = '';
+    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.topPage);
+    this.topPage = document.querySelector('.top-page');
+    this.tableTop = document.querySelector('.top-page__table');
+  }
+
+  createTopList(list) {
+    const fragment = document.createDocumentFragment();
+    list.forEach((item, i) => {
+      const tr = document.createElement('tr');
+      tr.insertAdjacentHTML('afterbegin', `<td>${i + 1}</td><td>${item.name}</td><td>${item.score}</td>`);
+      fragment.append(tr);
+    });
+    this.tableTop.append(fragment);
   }
 
   createAboutPage() {
@@ -133,6 +155,7 @@ export default class View {
     window.addEventListener('keydown', this.menuEventHandlers);
     window.addEventListener('input', this.menuEventHandlers);
     window.addEventListener('mouseover', this.onHoverHandler.bind(this));
+    // window.addEventListener('change', this.menuEventHandlers);
   }
 
   addCanvasListenerEvents() {
@@ -152,6 +175,7 @@ export default class View {
     window.removeEventListener('keydown', this.menuEventHandlers);
     window.removeEventListener('input', this.menuEventHandlers);
     window.removeEventListener('mouseover', this.onHoverHandler.bind(this));
+    // window.removeEventListener('change', this.menuEventHandlers);
   }
 
   removeCanvasEventHandlers() {
