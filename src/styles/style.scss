@@ -12,28 +12,57 @@ html, body{
   overflow: hidden;
   padding: 0;
   margin: 0;
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
 }
 
-.score {
-  position: fixed;
-  color: white;
-  font-size: 18px;
-  margin: 5px 0 0 5px;
+.wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   user-select: none;
-  left: 5px;
-  top: 5px;
+  padding-top: 2rem;
 }
 
-.health {
-  position: fixed;
-  color: white;
-  font-size: 18px;
-  margin: 5px 0 0 5px;
+.container {
+  // width: 100;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   user-select: none;
-  right: 10px;
-  top: 5px;
+  overflow: auto;
 }
 
-canvas {
-  cursor: crosshair;
+.container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.container::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+  border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+.title {
+  font-size: 2.4rem;
+  margin-bottom: 2rem;
+}
+
+.btn-wrapper {
+  margin-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.btn:hover {
+  cursor: pointer;
 }

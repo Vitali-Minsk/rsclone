@@ -1,18 +1,4 @@
 .about {
-  width: 100%;
-  color: #fff;
-  font-family: 'Roboto', sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-
-  &__title {
-    font-size: 2.4rem;
-    margin-bottom: 1.4rem;
-  }
-
   &__text {
     font-size: 2rem;
     margin-top: 10px;
@@ -25,13 +11,6 @@
     align-items: flex-start;
     justify-content: center;
     margin-bottom: 15px;
-  }
-
-  &__btn-wrapper {
-    margin-top: 1rem;
-    width: 400px;
-    display: flex;
-    justify-content: space-between;
   }
 
   &__btn-nav {

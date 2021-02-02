@@ -1,0 +1,21 @@
+.top-page {
+  &__table {
+    table-layout: fixed;
+    min-width: 500px;
+    height: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.5rem;
+
+    &-header {
+      padding: .5rem;
+    }
+
+    &-header:first-child {
+      width: 10%;
+    }
+    td {
+      padding: 5px;
+      text-align: center;
+    }
+  }
+}

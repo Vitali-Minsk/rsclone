@@ -48,6 +48,7 @@ export default class Model {
     this.playerProjectileSpeed = 10;
 
     this.explosions = [];
+    this.userName = 'Player';
   }
 
   init(shipIndex) {
