@@ -2,12 +2,12 @@ export default {
   mainMenu: `
   <div class="main-menu">
     <ul class="main-menu__list">
-      <li class="main-menu__item">New Game</li>
-      <li class="main-menu__item">Continue</li>
-      <li class="main-menu__item">Save Game</li>
-      <li class="main-menu__item">Load Game</li>
-      <li class="main-menu__item">Top List</li>
-      <li class="main-menu__item">Options</li>
+      <li class="main-menu__item new-game">New Game</li>
+      <li class="main-menu__item continue">Continue</li>
+      <li class="main-menu__item save-game">Save Game</li>
+      <li class="main-menu__item load-game">Load Game</li>
+      <li class="main-menu__item top-list">Top List</li>
+      <li class="main-menu__item options">Options</li>
     </ul>
   </div>`,
   modal: `
