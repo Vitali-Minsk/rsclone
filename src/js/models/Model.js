@@ -1,4 +1,3 @@
-// import gsap from 'gsap';
 import Player from './player';
 import Projectile from './projectile';
 import Particle from './particle';
@@ -41,9 +40,6 @@ export default class Model {
     this.background = new StarsBackground(this.canvas, this.ctx);
 
     this.difficultyLevel = {};
-    // this.spawnEnemiesInterval = 2000;
-    // this.enemiesShotInterval = 500;
-    // this.enemyProjectileSpeed = 3;
 
     this.playerProjectileSpeed = 10;
 
@@ -52,7 +48,7 @@ export default class Model {
   }
 
   init(shipIndex) {
-    this.player = new Player(this.ctx, this.x, this.y, 10, 'white', shipIndex);
+    this.player = new Player(this.ctx, this.x, this.y, shipIndex);
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
@@ -92,7 +88,7 @@ export default class Model {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.background.updateStars();
     this.playerMove();
-    this.player.rotate(this.playerAngle);
+    this.player.update(this.playerAngle);
     this.particles.forEach((particle, index) => {
       if (particle.alpha <= 0) {
         this.particles.splice(index, 1);
@@ -109,8 +105,6 @@ export default class Model {
     });
     this.projectiles.forEach((projectile, index) => {
       projectile.update();
-
-      // remove from edges from screen
       if (
         projectile.x + projectile.radius < 0
         || projectile.x - projectile.radius > this.canvas.width
@@ -122,8 +116,6 @@ export default class Model {
     });
     this.enemiesProjectiles.forEach((projectile, index) => {
       projectile.update();
-
-      // remove from edges from screen
       if (
         projectile.x + projectile.radius < 0
         || projectile.x - projectile.radius > this.canvas.width
@@ -133,13 +125,9 @@ export default class Model {
         this.enemiesProjectiles.splice(index, 1);
       }
     });
-
     this.enemies.forEach((enemy, index) => {
       enemy.update(this.player.x, this.player.y);
-      // end game
       this.checkEndGame(enemy, index);
-
-      // hit the enemy
       this.enemyHit(enemy, index);
     });
   }
@@ -151,10 +139,9 @@ export default class Model {
       if (dist - projectile.radius < (enemy.type.width + enemy.type.height) / 4 + 5) {
         this.difficultyLevelIncrease();
         this.createCanvasEvent('enemyHit');
-        // this.enemyDamage(enemy, projectile, projectileIndex, enemyIndex);
         const currentEnemy = enemy;
         currentEnemy.health -= this.player.type.projectileSpeed;
-        // console.log(enemy.health);
+
         if (enemy.health > 0) {
           this.projectiles.splice(projectileIndex, 1);
           this.createSparks(projectile, 1);
@@ -173,16 +160,17 @@ export default class Model {
 
   checkEndGame(enemy, enemyIndex) {
     const distEnem = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
+
     if (distEnem - enemy.type.width / 2 - this.player.type.width / 2 < 1) {
       this.gameOver();
       this.enemies.splice(enemyIndex, 1);
-      // this.createSparks(projectile, 5);
       this.createCanvasEvent('enemyExplosion');
       this.createExplosion({ x: enemy.x, y: enemy.y });
     }
     this.enemiesProjectiles.forEach((enemyProjectile, index) => {
       const distProj = Math.hypot(this.player.x - enemyProjectile.x,
         this.player.y - enemyProjectile.y);
+
       if (distProj - (this.player.type.width + this.player.type.height) / 4 < 1) {
         if (this.player.health >= 1) {
           this.player.health -= 1;
@@ -213,16 +201,11 @@ export default class Model {
     }
   }
 
-  // enemyDamage(enemy, projectile, projectileIndex, enemyIndex) {
-
-  // }
-
   scoreIncrease(num) {
     this.score += num;
   }
 
   startNewGame(ind) {
-    // this.stopEnemySpawn();
     cancelAnimationFrame(this.animationId);
     clearInterval(this.timeIdEnemySpawn);
     clearInterval(this.timeIdEnemyShot);
@@ -248,18 +231,16 @@ export default class Model {
     if (this.keys.KeyD) {
       this.player.x += this.player.type.speed * 1.4;
     }
-    // this.player.draw(this.x, this.y);
   }
 
   mouseMoveHandler(e) {
     this.playerAngle = Math.atan2(e.clientY - this.player.y,
       e.clientX - this.player.x);
-    this.player.rotate(this.playerAngle);
+    this.player.update(this.playerAngle);
   }
 
   pauseGame() {
     if (!this.isPause) {
-      // this.stopEnemySpawn();
       clearInterval(this.timeIdEnemySpawn);
       cancelAnimationFrame(this.animationId);
       this.isPause = true;

@@ -1,4 +1,4 @@
-import createElement from './utils/createElement';
+import createElement from '../utils/createElement';
 import pageLayoutElements from './pageLayoutElements';
 import Sounds from './sounds';
 
@@ -12,8 +12,6 @@ export default class View {
     this.scoreWrap = null;
     this.healthEl = null;
     this.healthWrap = null;
-    this.startGameBtn = null;
-    this.modal = null;
     this.modalScore = null;
     this.isGameRun = false;
 
@@ -78,7 +76,7 @@ export default class View {
     this.startPage.innerHTML = '';
     this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.topPage);
     this.topPage = document.querySelector('.top-page');
-    this.tableTop = document.querySelector('.top-page__table');
+    this.tableTop = document.querySelector('.top-page__tbody');
   }
 
   createTopList(list) {
@@ -96,7 +94,7 @@ export default class View {
     this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.about);
   }
 
-  updatecurrentShipDisplay(ship) {
+  updateCurrentShipDisplay(ship) {
     this.displays.shipImg.style.backgroundPosition = `${-ship.x}px ${-ship.y}px`;
     this.displays.shipImg.style.width = `${ship.width}px`;
     this.displays.shipImg.style.height = `${ship.height}px`;
@@ -121,9 +119,6 @@ export default class View {
   createModal(currentScore) {
     this.startPage.innerHTML = '';
     this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
-    // this.body.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
-    // this.startGameBtn = document.querySelector('.modal__button');
-    // this.modal = document.querySelector('.modal');
     this.modalScore = document.querySelector('.modal__score');
     this.modalScore.innerHTML = currentScore;
   }
@@ -155,7 +150,6 @@ export default class View {
     window.addEventListener('keydown', this.menuEventHandlers);
     window.addEventListener('input', this.menuEventHandlers);
     window.addEventListener('mouseover', this.onHoverHandler.bind(this));
-    // window.addEventListener('change', this.menuEventHandlers);
   }
 
   addCanvasListenerEvents() {
@@ -175,10 +169,9 @@ export default class View {
     window.removeEventListener('keydown', this.menuEventHandlers);
     window.removeEventListener('input', this.menuEventHandlers);
     window.removeEventListener('mouseover', this.onHoverHandler.bind(this));
-    // window.removeEventListener('change', this.menuEventHandlers);
   }
 
-  removeCanvasEventHandlers() {
+  removeCanvasListenersEvents() {
     this.canvas.removeEventListener('click', this.canvasEventHandlers);
     this.canvas.removeEventListener('mousemove', this.canvasEventHandlers);
     this.canvas.removeEventListener('enemyHit', this.canvasEventHandlers);
@@ -196,14 +189,12 @@ export default class View {
     this.canvas.classList.remove('hidden');
     this.scoreWrap.classList.remove('hidden');
     this.healthWrap.classList.remove('hidden');
-    console.log('new game');
     this.isGameRun = true;
     this.addCanvasListenerEvents();
     this.removeMenuListenerEvents();
   }
 
   pauseEventHandler() {
-    console.log('pause');
     if (this.isGameRun) {
       this.showStartPage();
       this.isGameRun = !this.isGameRun;
@@ -224,7 +215,7 @@ export default class View {
     this.canvas.classList.add('hidden');
     this.scoreWrap.classList.add('hidden');
     this.healthWrap.classList.add('hidden');
-    this.removeCanvasEventHandlers();
+    this.removeCanvasListenersEvents();
     this.addMenuListenerEvents();
   }
 

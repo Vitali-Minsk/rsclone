@@ -1,9 +1,8 @@
-import View from './View';
-import Model from './Model';
-import spaceShips from './shipsImgSource';
-import tooltipMessages from './tooltipMessage';
-// import Data from './topList';
-import sendRequest from './data';
+import View from './view/View';
+import Model from './models/Model';
+import spaceShips from './models/shipsImgSource';
+import tooltipMessages from './view/tooltipMessage';
+import sendRequest from './request';
 
 export default class Controller {
   constructor() {
@@ -12,7 +11,6 @@ export default class Controller {
     this.shipIndex = 0;
     this.isFirstGame = true;
     this.gameOver = false;
-    // this.data = new Data();
   }
 
   init() {
@@ -30,7 +28,7 @@ export default class Controller {
       this.view.sounds.playClickSound();
 
       const currentShip = spaceShips[this.shipIndex];
-      this.view.updatecurrentShipDisplay(currentShip);
+      this.view.updateCurrentShipDisplay(currentShip);
     }
     if (e.target.innerHTML === 'Continue' && !this.gameOver) {
       if (this.isFirstGame) {
@@ -65,12 +63,8 @@ export default class Controller {
     if (e.target.innerHTML === 'Top List') {
       this.view.sounds.playClickSound();
       this.view.createTopPage();
-      // sendRequest('POST', { name: 'Dima', score: 123123 });
       sendRequest('GET')
         .then((data) => {
-          console.log(data);
-          // this.view.userName.innerHTML = data.name;
-          // this.view.userScore.innerHTML = data.age;
           this.view.createTopList(data);
         })
         .catch((err) => console.log(err));
@@ -109,7 +103,7 @@ export default class Controller {
       if (this.shipIndex > 0) {
         this.shipIndex -= 1;
         const currentShip = spaceShips[this.shipIndex];
-        this.view.updatecurrentShipDisplay(currentShip);
+        this.view.updateCurrentShipDisplay(currentShip);
       }
     }
     if (e.target === this.view.buttons.nextShip) {
@@ -117,7 +111,7 @@ export default class Controller {
       if (this.shipIndex < 10) {
         this.shipIndex += 1;
         const currentShip = spaceShips[this.shipIndex];
-        this.view.updatecurrentShipDisplay(currentShip);
+        this.view.updateCurrentShipDisplay(currentShip);
       }
     }
     if (e.type === 'input' && e.target === this.view.options.musicVolumeRange) {

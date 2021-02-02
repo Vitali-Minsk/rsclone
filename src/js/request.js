@@ -1,4 +1,3 @@
-// const requestURL = 'http://localhost:4000/';
 const requestURL = 'https://peaceful-harbor-25159.herokuapp.com/users'; // переменная с адресом
 export default function sendRequest(method, body = null) { // сама функция описывающая запрос
   return new Promise((resolve, reject) => {

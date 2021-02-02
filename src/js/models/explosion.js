@@ -1,4 +1,4 @@
-import explosionImgSrc from '../assets/boom.png';
+import explosionImgSrc from '../../assets/boom.png';
 
 export default class Explosion {
   constructor(ctx, pos, timer) {
