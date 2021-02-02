@@ -35,6 +35,20 @@
     border: none;
   }
 
+  &__btn-ship:focus {
+    outline: none;
+  }
+
+  &__btn-ship:hover {
+    outline: none;
+    cursor: pointer;
+  }
+
+  &__btn-ship:active {
+    cursor: pointer;
+    color: rgb(92, 86, 86);
+  }
+
   &__ship-name {
     margin-bottom: 20px;
   }

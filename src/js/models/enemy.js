@@ -1,5 +1,5 @@
 import shipsImgSource from './shipsImgSource';
-import imgSpaceCraft from '../assets/sprite-ships2.png';
+import imgSpaceCraft from '../../assets/sprite-ships2.png';
 
 export default class Enemy {
   constructor(ctx, x, y) {
@@ -35,7 +35,7 @@ export default class Enemy {
     this.ctx.translate(-this.x, -this.y);
 
     this.ctx.drawImage(this.img,
-      this.type.x, this.type.y, this.type.width, this.type.height, // исходные координаты
+      this.type.x, this.type.y, this.type.width, this.type.height,
       this.x - this.type.width / 2, this.y - this.type.height / 2,
       this.type.width, this.type.height);
 

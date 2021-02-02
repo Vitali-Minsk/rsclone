@@ -7,7 +7,7 @@ import './styles/optionsMenu.scss';
 import './styles/aboutPage.scss';
 import './styles/tooltip.scss';
 import './styles/modal.scss';
-import './styles/top-page.scss';
+import './styles/topPage.scss';
 
 import Controller from './js/controller';
 
