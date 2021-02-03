@@ -1,5 +1,10 @@
 export default class StarsBackground {
-  constructor(canvas, ctx) {
+  canvas: HTMLCanvasElement ;
+  ctx: CanvasRenderingContext2D;
+  stars: any[];
+  numStars: number;
+  speed: number;
+  constructor(canvas: any, ctx: CanvasRenderingContext2D) {
     this.canvas = canvas;
     this.ctx = ctx;
     this.stars = [];
@@ -7,8 +12,7 @@ export default class StarsBackground {
     this.speed = 5;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  makeStar() {
+  makeStar(): object {
     return {
       x: Math.random(),
       y: Math.random(),
@@ -17,13 +21,13 @@ export default class StarsBackground {
     };
   }
 
-  initStars() {
+  initStars(): void {
     for (let i = 0; i < this.numStars; i += 1) {
       this.stars[i] = this.makeStar();
     }
   }
 
-  updateStars() {
+  updateStars(): void {
     for (let i = 0; i < this.numStars; i += 1) {
       this.stars[i].x -= (this.stars[i].distance ** 2) / (this.canvas.width * this.speed);
       if (this.stars[i].x <= 0) {

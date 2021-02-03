@@ -6,6 +6,34 @@ import StarsBackground from './starsBackground';
 import Explosion from './explosion';
 
 export default class Model {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  projectiles: any[];
+  enemies: any[];
+  particles: any[];
+  score: number;
+  animationId: any;
+  timeIdEnemySpawn: any;
+  timeIdEnemyShot: any;
+  numberSparks: number;
+  playerAngle: number;
+  enemyAngle: number;
+  keys: { KeyW: boolean; KeyS: boolean; KeyA: boolean; KeyD: boolean; };
+  isPause: boolean;
+  enemiesProjectiles: any;
+  mouseMoveHandlerBind: any;
+  background: StarsBackground;
+  difficultyLevel: {
+    spawnEnemiesInterval: number,
+    enemiesShotInterval: number,
+    enemyProjectileSpeed: number,
+  }
+  playerProjectileSpeed: number;
+  explosions: any[];
+  userName: string;
+  player: Player;
   constructor() {
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
@@ -39,7 +67,11 @@ export default class Model {
 
     this.background = new StarsBackground(this.canvas, this.ctx);
 
-    this.difficultyLevel = {};
+    this.difficultyLevel = {
+      spawnEnemiesInterval: 2000,
+      enemiesShotInterval: 500,
+      enemyProjectileSpeed: 3
+    };
 
     this.playerProjectileSpeed = 10;
 
@@ -47,7 +79,7 @@ export default class Model {
     this.userName = 'Player';
   }
 
-  init(shipIndex) {
+  init(shipIndex: number): void {
     this.player = new Player(this.ctx, this.x, this.y, shipIndex);
     this.projectiles = [];
     this.enemies = [];
@@ -63,10 +95,10 @@ export default class Model {
     };
   }
 
-  spawnEnemies() {
+  spawnEnemies(): void {
     this.timeIdEnemySpawn = setInterval(() => {
-      let enemyX;
-      let enemyY;
+      let enemyX: number;
+      let enemyY: number;
 
       if (Math.random() < 0.5) {
         enemyX = Math.random() < 0.5 ? 0 - 50 : this.canvas.width + 50;
@@ -76,13 +108,13 @@ export default class Model {
         enemyY = Math.random() < 0.5 ? 0 - 50 : this.canvas.height + 50;
       }
       const enemy = new Enemy(this.ctx, enemyX, enemyY);
-      enemy.calculateAngle(this.player.x, this.player.y);
+      enemy.calculateAngle();
       enemy.create();
       this.enemies.push(enemy);
     }, this.difficultyLevel.spawnEnemiesInterval);
   }
 
-  animate() {
+  animate(): void {
     this.animationId = requestAnimationFrame(() => this.animate());
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -132,7 +164,7 @@ export default class Model {
     });
   }
 
-  enemyHit(enemy, enemyIndex) {
+  enemyHit(enemy: { x: number; y: number; type: { width: number; height: number; }; health: number; }, enemyIndex: number): void {
     this.projectiles.forEach((projectile, projectileIndex) => {
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
@@ -158,7 +190,7 @@ export default class Model {
     });
   }
 
-  checkEndGame(enemy, enemyIndex) {
+  checkEndGame(enemy: { x: number; y: number; type: { width: number; }; }, enemyIndex: number): void {
     const distEnem = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
 
     if (distEnem - enemy.type.width / 2 - this.player.type.width / 2 < 1) {
@@ -185,7 +217,7 @@ export default class Model {
     });
   }
 
-  createSparks(projectile, particleSize) {
+  createSparks(projectile: { x: number; y: number; color: string; }, particleSize: number): void {
     for (let i = 0; i < this.numberSparks; i += 1) {
       this.particles.push(new Particle(
         this.ctx,
@@ -201,11 +233,11 @@ export default class Model {
     }
   }
 
-  scoreIncrease(num) {
+  scoreIncrease(num: number): void {
     this.score += num;
   }
 
-  startNewGame(ind) {
+  startNewGame(ind: number): void {
     cancelAnimationFrame(this.animationId);
     clearInterval(this.timeIdEnemySpawn);
     clearInterval(this.timeIdEnemyShot);
@@ -218,7 +250,7 @@ export default class Model {
     this.isPause = false;
   }
 
-  playerMove() {
+  playerMove(): void {
     if (this.keys.KeyW) {
       this.player.y -= this.player.type.speed * 1.4;
     }
@@ -233,13 +265,13 @@ export default class Model {
     }
   }
 
-  mouseMoveHandler(e) {
+  mouseMoveHandler(e: { type?: string; code?: string; clientY?: any; clientX?: any; }): void {
     this.playerAngle = Math.atan2(e.clientY - this.player.y,
       e.clientX - this.player.x);
     this.player.update(this.playerAngle);
   }
 
-  pauseGame() {
+  pauseGame(): void {
     if (!this.isPause) {
       clearInterval(this.timeIdEnemySpawn);
       cancelAnimationFrame(this.animationId);
@@ -251,7 +283,7 @@ export default class Model {
     }
   }
 
-  playerShot(event) {
+  playerShot(event: { type?: string; code?: string; clientY?: number; clientX?: number; }): void {
     this.playerAngle = Math.atan2(event.clientY - this.player.y,
       event.clientX - this.player.x);
     const velocity = {
@@ -271,7 +303,7 @@ export default class Model {
     );
   }
 
-  enemiesShoot() {
+  enemiesShoot(): void {
     this.timeIdEnemyShot = setInterval(() => {
       this.enemies.forEach((enemy, index) => {
         const indRand = Math.floor(Math.random() * this.enemies.length);
@@ -282,7 +314,7 @@ export default class Model {
     }, this.difficultyLevel.enemiesShotInterval);
   }
 
-  enemyShot(enemy) {
+  enemyShot(enemy: { angle: number; x: number; y: number; projectileColor: string; }): void {
     const enemyAngle = enemy.angle;
     const velocity = {
       x: Math.cos(enemyAngle) * this.difficultyLevel.enemyProjectileSpeed,
@@ -302,19 +334,19 @@ export default class Model {
     this.createCanvasEvent('enemyShot');
   }
 
-  createCanvasEvent(eventName) {
+  createCanvasEvent(eventName: string): void {
     const event = new Event(eventName);
     this.canvas.dispatchEvent(event);
   }
 
-  saveGame() {
+  saveGame(): void {
     localStorage.setItem('player', JSON.stringify(this.player));
     localStorage.setItem('enemies', JSON.stringify(this.enemies));
     localStorage.setItem('score', JSON.stringify(this.score));
     localStorage.setItem('difficultyLevel', JSON.stringify(this.difficultyLevel));
   }
 
-  loadGame(func) {
+  loadGame(func: (arg0: number, arg1: number) => void): void {
     const player = JSON.parse(localStorage.getItem('player'));
     const enemies = JSON.parse(localStorage.getItem('enemies'));
     const score = JSON.parse(localStorage.getItem('score'));
@@ -322,13 +354,13 @@ export default class Model {
     this.difficultyLevel = difficultyLevel;
     this.startNewGame(player.shipIndex);
     this.player = Object.assign(this.player, player, { ctx: this.ctx, img: this.player.img });
-    this.enemies = enemies.map((enemy) => Object.assign(new Enemy(this.ctx, 0, 0), enemy,
+    this.enemies = enemies.map((enemy: object) => Object.assign(new Enemy(this.ctx, 0, 0), enemy,
       { ctx: this.ctx, img: this.player.img }));
     this.score = score;
     func(this.score, this.player.health);
   }
 
-  static checkSaves() {
+  static checkSaves(): boolean {
     if (!localStorage.getItem('player')
     && !localStorage.getItem('enemies')
     && !localStorage.getItem('score')) {
@@ -337,7 +369,7 @@ export default class Model {
     return true;
   }
 
-  difficultyLevelIncrease() {
+  difficultyLevelIncrease(): void {
     if (this.score > 100) {
       if (this.difficultyLevel.spawnEnemiesInterval > 1000) {
         clearInterval(this.timeIdEnemySpawn);
@@ -355,12 +387,12 @@ export default class Model {
     }
   }
 
-  createExplosion(pos) {
+  createExplosion(pos: { x: number; y: number; }): void {
     const explosion = new Explosion(this.ctx, pos);
     this.explosions.push(explosion);
   }
 
-  gameOver() {
+  gameOver(): void {
     this.createCanvasEvent('gameOver');
     this.createExplosion({ x: this.player.x, y: this.player.y });
     this.player.x = -1000;

@@ -1,5 +1,5 @@
 export default {
-  mainMenu: `
+  mainMenu:  `
   <div class="main-menu">
     <ul class="main-menu__list">
       <li class="main-menu__item new-game">New Game</li>
