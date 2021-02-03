@@ -1,20 +1,43 @@
 import audioSrc from './audioSrc';
 
 export default class Sounds {
+  gameSounds: {
+    gameTheme: HTMLAudioElement | null,
+    shot: HTMLAudioElement | null,
+    playerDamage: HTMLAudioElement | null,
+    damage: HTMLAudioElement | null,
+    explosions: HTMLAudioElement[] | null,
+    enemyShots: HTMLAudioElement[] | null,
+  };
+  menuSounds: {
+    audioHover: HTMLAudioElement | null,
+    audioClick: HTMLAudioElement | null,
+  };
+  gameMusicVolume: number;
+  gameSfxVolume: number;
   constructor() {
-    this.gameSounds = {};
-    this.menuMusic = null;
-    this.menuSounds = {};
+    this.gameSounds = {
+      gameTheme: null,
+      shot: null,
+      playerDamage: null,
+      damage: null,
+      explosions: null,
+      enemyShots: null,
+    };
+    this.menuSounds = {
+      audioHover: null,
+      audioClick: null,
+    };
 
     this.gameMusicVolume = 0.7;
     this.gameSfxVolume = 0.7;
   }
 
-  init() {
+  init(): void {
     this.loadSounds();
   }
 
-  loadSounds() {
+  loadSounds(): void {
     this.gameSounds.gameTheme = Sounds.createSound(audioSrc.gameTheme);
     this.gameSounds.shot = Sounds.createSound(audioSrc.shot);
     this.gameSounds.playerDamage = Sounds.createSound(audioSrc.playerDamage);
@@ -25,22 +48,22 @@ export default class Sounds {
     this.menuSounds.audioClick = Sounds.createSound(audioSrc.uiSounds.click);
   }
 
-  static createSound(path) {
+  static createSound(path: string): HTMLAudioElement {
     const sound = new Audio();
     sound.src = path;
     return sound;
   }
 
-  static createSounds(pathObj) {
+  static createSounds(pathObj: { [s: string]: string; }): any[] {
     const soundsArr = [];
-    Object.values(pathObj).forEach((path) => {
+    Object.values(pathObj).forEach((path: string) => {
       const sound = this.createSound(path);
       soundsArr.push(sound);
     });
     return soundsArr;
   }
 
-  playSound(sound, isLoop) {
+  playSound(sound: HTMLAudioElement, isLoop?: boolean): void {
     const audio = sound;
     const isPlaying = audio.currentTime > 0 && !audio.paused && !audio.ended
     && audio.readyState > 2;
@@ -54,7 +77,7 @@ export default class Sounds {
     }
   }
 
-  playRandSound(arr) {
+  playRandSound(arr: string | any[]): void {
     const audio = arr[Math.floor(Math.random() * arr.length)];
     const isPlaying = audio.currentTime > 0 && !audio.paused && !audio.ended
     && audio.readyState > 2;
@@ -64,7 +87,7 @@ export default class Sounds {
     audio.play();
   }
 
-  static pauseSounds(arr) {
+  static pauseSounds(arr: any[]): void {
     arr.forEach((sound) => {
       const audio = sound;
       if (audio.muted) {
@@ -75,7 +98,7 @@ export default class Sounds {
     });
   }
 
-  pauseGameTheme() {
+  pauseGameTheme(): void {
     if (this.gameSounds.gameTheme.muted) {
       this.gameSounds.gameTheme.muted = false;
     } else {
@@ -83,15 +106,15 @@ export default class Sounds {
     }
   }
 
-  playGameTheme() {
+  playGameTheme(): void {
     this.playSound(this.gameSounds.gameTheme, true);
   }
 
-  playPlayerHitSound() {
+  playPlayerHitSound(): void {
     this.playSound(this.gameSounds.playerDamage);
   }
 
-  pausePlayerHitSound() {
+  pausePlayerHitSound(): void {
     if (this.gameSounds.playerDamage.muted) {
       this.gameSounds.playerDamage.muted = false;
     } else {
@@ -99,19 +122,19 @@ export default class Sounds {
     }
   }
 
-  playExplosionSound() {
+  playExplosionSound(): void {
     this.playRandSound(this.gameSounds.explosions);
   }
 
-  pauseExplosionSound() {
+  pauseExplosionSound(): void {
     Sounds.pauseSounds(this.gameSounds.explosions);
   }
 
-  playEnemyHitSound() {
+  playEnemyHitSound(): void {
     this.playSound(this.gameSounds.damage);
   }
 
-  pauseEnemyHitSound() {
+  pauseEnemyHitSound(): void {
     if (this.gameSounds.damage.muted) {
       this.gameSounds.damage.muted = false;
     } else {
@@ -119,11 +142,11 @@ export default class Sounds {
     }
   }
 
-  playPlayerShotSound() {
+  playPlayerShotSound(): void {
     this.playSound(this.gameSounds.shot);
   }
 
-  pausePlayerShotSound() {
+  pausePlayerShotSound(): void {
     if (this.gameSounds.shot.muted) {
       this.gameSounds.shot.muted = false;
     } else {
@@ -131,15 +154,15 @@ export default class Sounds {
     }
   }
 
-  playEnemyShotSound() {
+  playEnemyShotSound(): void {
     this.playRandSound(this.gameSounds.enemyShots);
   }
 
-  pauseEnemyShotSound() {
+  pauseEnemyShotSound(): void {
     Sounds.pauseSounds(this.gameSounds.enemyShots);
   }
 
-  pauseAllSounds() {
+  pauseAllSounds(): void {
     this.pauseGameTheme();
     this.pausePlayerHitSound();
     this.pauseExplosionSound();
@@ -148,11 +171,11 @@ export default class Sounds {
     this.pauseEnemyShotSound();
   }
 
-  playHoverSound() {
+  playHoverSound(): void {
     this.playSound(this.menuSounds.audioHover);
   }
 
-  playClickSound() {
+  playClickSound(): void {
     this.playSound(this.menuSounds.audioClick);
   }
 }

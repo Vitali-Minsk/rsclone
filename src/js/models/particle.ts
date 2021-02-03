@@ -1,5 +1,13 @@
 export default class Particle {
-  constructor(ctx, x, y, radius, color, velocity) {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  radius: number;
+  color: string;
+  velocity: { x: number; y: number; };
+  alpha: number;
+  friction: number;
+  constructor(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string, velocity: { x: number; y: number; }) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
@@ -10,7 +18,7 @@ export default class Particle {
     this.friction = 0.99;
   }
 
-  draw() {
+  draw(): void {
     this.ctx.save();
     this.ctx.globalAlpha = this.alpha;
     this.ctx.beginPath();
@@ -20,7 +28,7 @@ export default class Particle {
     this.ctx.restore();
   }
 
-  update() {
+  update(): void {
     this.draw();
     this.velocity.x *= this.friction;
     this.velocity.y *= this.friction;

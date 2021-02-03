@@ -3,6 +3,28 @@ import pageLayoutElements from './pageLayoutElements';
 import Sounds from './sounds';
 
 export default class View {
+  body: HTMLElement;
+  sounds: Sounds;
+  startPage: HTMLElement | null;
+  canvas: HTMLCanvasElement;
+  scoreEl: HTMLElement | null;
+  scoreWrap: HTMLElement | null;
+  healthEl: HTMLElement | null;
+  healthWrap: HTMLElement | null;
+  modalScore: HTMLElement | null;
+  isGameRun: boolean;
+  menuEventHandlers: any;
+  canvasEventHandlers: any;
+  buttons: any;
+  graphicsLevelValue: number;
+  topPage: any;
+  userName: any;
+  userScore: any;
+  displays: { shipImg: any; shipName: any; shipSpeed: any; shipHealth: any; shipLaser: any; };
+  userNameInput: any;
+  tableTop: any;
+  options: any;
+  
   constructor() {
     this.body = document.body;
     this.sounds = new Sounds();
@@ -18,10 +40,23 @@ export default class View {
     this.menuEventHandlers = null;
     this.canvasEventHandlers = null;
 
-    this.buttons = {};
-    this.displays = {};
+    this.buttons = {
+      prevShip: null,
+      nextShip: null,
+    };
+    this.displays = {
+      shipImg: null,
+      shipName: null,
+      shipSpeed: null,
+      shipHealth: null,
+      shipLaser: null
+    };
 
-    this.options = {};
+    this.options = {
+      musicVolumeRange: null,
+      effectsVolumeRange: null,
+      graphicsLevelRange: null,
+    };
 
     this.graphicsLevelValue = 100;
 
@@ -30,7 +65,7 @@ export default class View {
     this.userScore = null;
   }
 
-  init() {
+  init(): void {
     this.createStartPage();
     this.createMainMenu();
     this.createScoreDisplay();
@@ -38,19 +73,19 @@ export default class View {
     this.sounds.init();
   }
 
-  createStartPage() {
+  createStartPage(): void {
     this.startPage = createElement('div', 'start-page');
     this.body.prepend(this.startPage);
   }
 
-  createMainMenu() {
+  createMainMenu(): void {
     this.startPage.innerHTML = '';
-    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.mainMenu);
+    this.startPage.insertAdjacentHTML('afterbegin', pageLayoutElements.mainMenu);
   }
 
-  createProfileMenu() {
+  createProfileMenu(): void {
     this.startPage.innerHTML = '';
-    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.profileMenu);
+    this.startPage.insertAdjacentHTML('afterbegin', pageLayoutElements.profileMenu);
     this.buttons.prevShip = document.querySelector('.btn-prev');
     this.buttons.nextShip = document.querySelector('.btn-next');
     this.displays.shipImg = document.querySelector('.profile-menu__img');
@@ -61,9 +96,9 @@ export default class View {
     this.userNameInput = document.querySelector('.profile-menu__input');
   }
 
-  createOptionMenu() {
+  createOptionMenu(): void {
     this.startPage.innerHTML = '';
-    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.optionsMenu);
+    this.startPage.insertAdjacentHTML('afterbegin', pageLayoutElements.optionsMenu);
     this.options.musicVolumeRange = document.getElementById('musicVolume');
     this.options.effectsVolumeRange = document.getElementById('effectsVolume');
     this.options.musicVolumeRange.value = this.sounds.gameMusicVolume;
@@ -72,14 +107,14 @@ export default class View {
     this.options.graphicsLevelRange.value = this.graphicsLevelValue;
   }
 
-  createTopPage() {
+  createTopPage(): void {
     this.startPage.innerHTML = '';
-    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.topPage);
+    this.startPage.insertAdjacentHTML('afterbegin', pageLayoutElements.topPage);
     this.topPage = document.querySelector('.top-page');
     this.tableTop = document.querySelector('.top-page__tbody');
   }
 
-  createTopList(list) {
+  createTopList(list: any[]): void {
     const fragment = document.createDocumentFragment();
     list.forEach((item, i) => {
       const tr = document.createElement('tr');
@@ -89,12 +124,12 @@ export default class View {
     this.tableTop.append(fragment);
   }
 
-  createAboutPage() {
+  createAboutPage(): void {
     this.startPage.innerHTML = '';
-    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.about);
+    this.startPage.insertAdjacentHTML('afterbegin', pageLayoutElements.about);
   }
 
-  updateCurrentShipDisplay(ship) {
+  updateCurrentShipDisplay(ship: { x: number; y: number; width: number; height: number; name: number; speed: number; health: number; projectileSpeed: number; }): void {
     this.displays.shipImg.style.backgroundPosition = `${-ship.x}px ${-ship.y}px`;
     this.displays.shipImg.style.width = `${ship.width}px`;
     this.displays.shipImg.style.height = `${ship.height}px`;
@@ -104,55 +139,55 @@ export default class View {
     this.displays.shipLaser.innerHTML = `${ship.projectileSpeed}`;
   }
 
-  renderCanvas(canvas) {
+  renderCanvas(canvas: HTMLCanvasElement): void {
     this.canvas = canvas;
     this.body.prepend(canvas);
     this.canvas.classList.add('hidden');
   }
 
-  createTooltip(message, timer) {
+  createTooltip(message: string, timer: number): void {
     const tooltip = createElement('div', 'tooltip', `<p class="tooltip__message">${message}</p>`);
     this.body.prepend(tooltip);
     setTimeout(() => tooltip.remove(), timer);
   }
 
-  createModal(currentScore) {
+  createModal(currentScore: number): void {
     this.startPage.innerHTML = '';
-    this.startPage.insertAdjacentHTML('afterBegin', pageLayoutElements.modal);
+    this.startPage.insertAdjacentHTML('afterbegin', pageLayoutElements.modal);
     this.modalScore = document.querySelector('.modal__score');
-    this.modalScore.innerHTML = currentScore;
+    this.modalScore.innerHTML = currentScore.toString();
   }
 
-  createScoreDisplay() {
-    this.body.insertAdjacentHTML('afterBegin', pageLayoutElements.score);
+  createScoreDisplay(): void {
+    this.body.insertAdjacentHTML('afterbegin', pageLayoutElements.score);
     this.scoreEl = document.getElementById('scoreEl');
     this.scoreWrap = document.querySelector('.score');
     this.scoreWrap.classList.add('hidden');
   }
 
-  createHealthPlayerDisplay() {
-    this.body.insertAdjacentHTML('afterBegin', pageLayoutElements.health);
+  createHealthPlayerDisplay(): void {
+    this.body.insertAdjacentHTML('afterbegin', pageLayoutElements.health);
     this.healthEl = document.getElementById('healthEl');
     this.healthWrap = document.querySelector('.health');
     this.healthWrap.classList.add('hidden');
   }
 
-  scoreElUpdate(currentScore) {
-    this.scoreEl.innerHTML = currentScore;
+  scoreElUpdate(currentScore: number): void {
+    this.scoreEl.innerHTML = currentScore.toString();
   }
 
-  healthElUpdate(currentHealth) {
-    this.healthEl.innerHTML = currentHealth;
+  healthElUpdate(currentHealth: number): void {
+    this.healthEl.innerHTML = currentHealth.toString();
   }
 
-  addMenuListenerEvents() {
+  addMenuListenerEvents(): void {
     window.addEventListener('click', this.menuEventHandlers);
     window.addEventListener('keydown', this.menuEventHandlers);
     window.addEventListener('input', this.menuEventHandlers);
     window.addEventListener('mouseover', this.onHoverHandler.bind(this));
   }
 
-  addCanvasListenerEvents() {
+  addCanvasListenerEvents(): void {
     this.canvas.addEventListener('click', this.canvasEventHandlers);
     this.canvas.addEventListener('mousemove', this.canvasEventHandlers);
     this.canvas.addEventListener('enemyHit', this.canvasEventHandlers);
@@ -164,14 +199,14 @@ export default class View {
     window.addEventListener('keydown', this.canvasEventHandlers);
   }
 
-  removeMenuListenerEvents() {
+  removeMenuListenerEvents(): void {
     window.removeEventListener('click', this.menuEventHandlers);
     window.removeEventListener('keydown', this.menuEventHandlers);
     window.removeEventListener('input', this.menuEventHandlers);
     window.removeEventListener('mouseover', this.onHoverHandler.bind(this));
   }
 
-  removeCanvasListenersEvents() {
+  removeCanvasListenersEvents(): void {
     this.canvas.removeEventListener('click', this.canvasEventHandlers);
     this.canvas.removeEventListener('mousemove', this.canvasEventHandlers);
     this.canvas.removeEventListener('enemyHit', this.canvasEventHandlers);
@@ -183,7 +218,7 @@ export default class View {
     window.removeEventListener('keydown', this.canvasEventHandlers);
   }
 
-  newGameItemHandler() {
+  newGameItemHandler(): void {
     this.startPage.classList.add('hidden');
     this.createMainMenu();
     this.canvas.classList.remove('hidden');
@@ -194,7 +229,7 @@ export default class View {
     this.removeMenuListenerEvents();
   }
 
-  pauseEventHandler() {
+  pauseEventHandler(): void {
     if (this.isGameRun) {
       this.showStartPage();
       this.isGameRun = !this.isGameRun;
@@ -204,13 +239,13 @@ export default class View {
     }
   }
 
-  onHoverHandler(e) {
+  onHoverHandler(e: { target: { classList: { contains: (arg0: string) => any; }; }; }) {
     if (e.target.classList.contains('main-menu__item')) {
       this.sounds.playHoverSound();
     }
   }
 
-  showStartPage() {
+  showStartPage(): void {
     this.startPage.classList.remove('hidden');
     this.canvas.classList.add('hidden');
     this.scoreWrap.classList.add('hidden');
@@ -219,7 +254,7 @@ export default class View {
     this.addMenuListenerEvents();
   }
 
-  showGamePage() {
+  showGamePage(): void {
     this.startPage.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.scoreWrap.classList.remove('hidden');

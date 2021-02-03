@@ -2,7 +2,14 @@ import shipsImgSource from './shipsImgSource';
 import imgSpaceCraft from '../../assets/sprite-ships2.png';
 
 export default class Player {
-  constructor(ctx, x, y, shipIndex) {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  shipIndex: number;
+  img: HTMLImageElement;
+  type: any;
+  health: any;
+  constructor(ctx: CanvasRenderingContext2D, x: number, y: number, shipIndex: number) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
@@ -14,7 +21,7 @@ export default class Player {
     this.health = this.type.health;
   }
 
-  update(angle) {
+  update(angle: number): void {
     this.ctx.save();
     this.ctx.translate(this.x, this.y);
     this.ctx.rotate(angle);

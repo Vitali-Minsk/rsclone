@@ -5,6 +5,11 @@ import tooltipMessages from './view/tooltipMessage';
 import sendRequest from './request';
 
 export default class Controller {
+  view: View;
+  model: Model;
+  shipIndex: number;
+  isFirstGame: boolean;
+  gameOver: boolean;
   constructor() {
     this.view = new View();
     this.model = new Model();
@@ -13,7 +18,7 @@ export default class Controller {
     this.gameOver = false;
   }
 
-  init() {
+  init(): void {
     this.view.init();
     this.view.renderCanvas(this.model.canvas);
     this.view.menuEventHandlers = this.menuEventHandlers.bind(this);
@@ -21,7 +26,7 @@ export default class Controller {
     this.view.addMenuListenerEvents();
   }
 
-  menuEventHandlers(e) {
+  menuEventHandlers(e: { target: { classList: { contains: (arg0: string) => any; }; }; code: string; type: string; }): void {
     if (e.target.classList.contains('new-game')) {
       this.menuNewGameItemHandler();
     }
@@ -72,7 +77,7 @@ export default class Controller {
     }
   }
 
-  canvasEventHandlers(e) {
+  canvasEventHandlers(e: { type: string; code: string; }): void {
     if (e.type === 'keydown' && (e.code === 'KeyW' || e.code === 'KeyS' || e.code === 'KeyA' || e.code === 'KeyD')) {
       this.model.keys[e.code] = true;
     } else if (e.type === 'keyup' && (e.code === 'KeyW' || e.code === 'KeyS' || e.code === 'KeyA' || e.code === 'KeyD')) {
@@ -107,14 +112,14 @@ export default class Controller {
     }
   }
 
-  menuNewGameItemHandler() {
+  menuNewGameItemHandler(): void {
     this.view.createProfileMenu();
     this.view.sounds.playClickSound();
-    const currentShip = spaceShips[this.shipIndex];
+    const currentShip: any = spaceShips[this.shipIndex];
     this.view.updateCurrentShipDisplay(currentShip);
   }
 
-  menuContinueItemHandler() {
+  menuContinueItemHandler(): void {
     if (this.isFirstGame) {
       this.view.createTooltip(tooltipMessages.failedContinue, 1000);
       return;
@@ -125,7 +130,7 @@ export default class Controller {
     this.view.sounds.pauseAllSounds();
   }
 
-  menuSaveGameItemHandler() {
+  menuSaveGameItemHandler(): void {
     if (this.isFirstGame) {
       this.view.createTooltip(tooltipMessages.failedSave, 1000);
       return;
@@ -135,7 +140,7 @@ export default class Controller {
     this.view.createTooltip(tooltipMessages.saveGame, 2000);
   }
 
-  menuLoadGameItemHandler() {
+  menuLoadGameItemHandler(): void {
     if (!Model.checkSaves()) return;
     this.gameOver = false;
     this.view.sounds.playClickSound();
@@ -147,18 +152,18 @@ export default class Controller {
     this.isFirstGame = false;
   }
 
-  menuTopPageItemHandler() {
+  menuTopPageItemHandler(): void {
     this.view.sounds.playClickSound();
     this.view.createTopPage();
     this.getRatingPlayers();
   }
 
-  menuOptionsItemHandler() {
+  menuOptionsItemHandler(): void {
     this.view.sounds.playClickSound();
     this.view.createOptionMenu();
   }
 
-  escapeKeyHandler() {
+  escapeKeyHandler(): void {
     if (this.isFirstGame) return;
     this.view.sounds.playClickSound();
     this.view.pauseEventHandler();
@@ -166,7 +171,7 @@ export default class Controller {
     this.view.sounds.pauseAllSounds();
   }
 
-  btnStartGameHandler() {
+  btnStartGameHandler(): void {
     this.gameOver = false;
     this.view.sounds.playClickSound();
     this.view.newGameItemHandler();
@@ -181,57 +186,57 @@ export default class Controller {
     this.isFirstGame = false;
   }
 
-  btnMainMenuHandler() {
+  btnMainMenuHandler(): void {
     this.view.sounds.playClickSound();
     this.view.createMainMenu();
   }
 
-  btnPrevShipHandler() {
+  btnPrevShipHandler(): void {
     this.view.sounds.playClickSound();
     if (this.shipIndex > 0) {
       this.shipIndex -= 1;
-      const currentShip = spaceShips[this.shipIndex];
+      const currentShip: any  = spaceShips[this.shipIndex];
       this.view.updateCurrentShipDisplay(currentShip);
     }
   }
 
-  btnNextShipHandler() {
+  btnNextShipHandler(): void {
     this.view.sounds.playClickSound();
     if (this.shipIndex < 10) {
       this.shipIndex += 1;
-      const currentShip = spaceShips[this.shipIndex];
+      const currentShip: any = spaceShips[this.shipIndex];
       this.view.updateCurrentShipDisplay(currentShip);
     }
   }
 
-  btnAboutHandler() {
+  btnAboutHandler(): void {
     this.view.sounds.playClickSound();
     this.view.createAboutPage();
   }
 
-  inputUserNameHandler() {
+  inputUserNameHandler(): void {
     this.model.userName = this.view.userNameInput.value;
   }
 
-  optionsMusicVolumeRangeHandler() {
+  optionsMusicVolumeRangeHandler(): void {
     this.view.sounds.playClickSound();
     this.view.sounds.gameMusicVolume = this.view.options.musicVolumeRange.value;
     this.view.sounds.gameSounds.gameTheme.volume = this.view.options.musicVolumeRange.value;
   }
 
-  optionsEffectsVolumeRangeHandler() {
+  optionsEffectsVolumeRangeHandler(): void {
     this.view.sounds.playClickSound();
     this.view.sounds.gameSfxVolume = this.view.options.effectsVolumeRange.value;
   }
 
-  optionsGraphicsLevelRangeHandler() {
+  optionsGraphicsLevelRangeHandler(): void {
     this.view.sounds.playClickSound();
     this.model.background.numStars = this.view.options.graphicsLevelRange.value;
     this.model.numberSparks = this.view.options.graphicsLevelRange.value / 10;
     this.view.graphicsLevelValue = this.view.options.graphicsLevelRange.value;
   }
 
-  gameOverEventHandler() {
+  gameOverEventHandler(): void {
     this.gameOver = true;
     this.view.healthElUpdate(this.model.player.health);
     this.view.sounds.playExplosionSound();
@@ -243,20 +248,20 @@ export default class Controller {
     }, 1000);
   }
 
-  updateDisplays(currentScore, currentHealth) {
+  updateDisplays(currentScore: number, currentHealth: number): void {
     this.view.scoreElUpdate(currentScore);
     this.view.healthElUpdate(currentHealth);
   }
 
-  getRatingPlayers() {
+  getRatingPlayers(): void {
     sendRequest('GET')
-      .then((data) => {
+      .then((data: any[]) => {
         this.view.createTopList(data);
       })
-      .catch((err) => console.log(err));
+      .catch((err: any) => console.log(err));
   }
 
-  sendUserData() {
+  sendUserData(): void {
     sendRequest('POST', { name: this.model.userName || 'Player', score: this.model.score });
   }
 }

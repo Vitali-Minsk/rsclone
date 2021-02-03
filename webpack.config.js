@@ -1,7 +1,7 @@
-const path = require('path')
-const HTMLWebpackPlugin = require('html-webpack-plugin')
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
@@ -30,47 +30,21 @@ const optimization = () => {
 
 const filename = ext => isDev ? `[name].${ext}` : `[name].[hash].${ext}`;
 
-// const jsLoader = () => {
-//   const loaders = [{
-//     loader: 'babel-loader',
-//     options: {
-//       presets: [
-//         '@babel/preset-env'
-//       ],
-//       plugins: [
-//         '@babel/plugin-proposal-class-properties'
-//       ]
-//     }
-//   }]
-
-//   if (isDev) {
-//     loaders.push('eslint-loader')
-//   }
-
-//   return loaders
-// }
-
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   mode: 'development',
   entry: {
-    main: ['@babel/polyfill', './index.js'],
-    // analytics: './analytics.ts'
+    main: ['@babel/polyfill', './index.ts'],
   },
   output: {
     filename: filename('js'),
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
-    extensions: ['.js', '.json'],
-    // alias: {
-    //   '@models': path.resolve(__dirname, 'src/models'),
-    //   '@': path.resolve(__dirname, 'src'),
-    // }
+    extensions: ['.ts', '.js', '.json'],
   },
   optimization: optimization(),
   devServer: {
-    // contentBase: './dist',
     port: 4200,
     open: true,
     hot: false
@@ -105,7 +79,7 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: '',//path.resolve(__dirname, 'dist'),
+              publicPath: '',
               hmr: isDev,
               reloadAll: true 
             },
@@ -119,9 +93,7 @@ module.exports = {
           {
             loader: MiniCssExtractPlugin.loader,
             options: {
-              publicPath: ''//path.resolve(__dirname, 'dist'),
-              // hmr: isDev,
-              // reloadAll: true 
+              publicPath: ''
             },
           }, 
           'css-loader',
@@ -129,8 +101,11 @@ module.exports = {
         ] 
       },
       {
-        test: /\.(png|jpg|svg|gif)$/,
-        use: ['file-loader']
+        test: /\.(png|jpe?g|gif|jp2|webp)$/,
+        loader: 'file-loader',
+        options: {
+        name: 'images/[name].[ext]'
+        }
       },
       {
         test: /\.(mp3|wav)$/,
@@ -170,7 +145,8 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [
-              '@babel/preset-env'
+              '@babel/preset-env',
+              "@babel/preset-typescript"
             ],
             plugins: [
               '@babel/plugin-proposal-class-properties',

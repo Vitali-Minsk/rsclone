@@ -9,7 +9,7 @@ import './styles/tooltip.scss';
 import './styles/modal.scss';
 import './styles/topPage.scss';
 
-import Controller from './js/controller';
+import Controller from './js/controller.ts';
 
 const controller = new Controller();
 controller.init();
